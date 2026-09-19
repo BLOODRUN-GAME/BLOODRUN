@@ -181,6 +181,49 @@
       }
     },
 
+    async requestPasswordReset(email, redirectTo) {
+      if (!this.isConfigured()) {
+        return {
+          error: { message: 'Supabase credentials are not configured.' }
+        };
+      }
+      const client = this.client;
+      if (!client) {
+        return { error: { message: 'Supabase client could not be created. Check URL and Key.' } };
+      }
+
+      try {
+        const { data, error } = await client.auth.resetPasswordForEmail(
+          email.trim(),
+          { redirectTo: redirectTo }
+        );
+        if (error) return { error };
+        return { data };
+      } catch (err) {
+        return { error: { message: err.message || 'Unexpected password reset error.' } };
+      }
+    },
+
+    async updatePassword(password) {
+      if (!this.isConfigured()) {
+        return {
+          error: { message: 'Supabase credentials are not configured.' }
+        };
+      }
+      const client = this.client;
+      if (!client) {
+        return { error: { message: 'Supabase client could not be created. Check URL and Key.' } };
+      }
+
+      try {
+        const { data, error } = await client.auth.updateUser({ password });
+        if (error) return { error };
+        return { data };
+      } catch (err) {
+        return { error: { message: err.message || 'Unexpected password update error.' } };
+      }
+    },
+
     async signOut() {
       if (!supabaseInstance) {
         currentSession = null;

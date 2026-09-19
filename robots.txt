@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mehtadhairya251-star.github.io/BLOODRUN/sitemap.xml
+Sitemap: https://BLOODRUN-GAME.github.io/BLOODRUN/sitemap.xml

@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BLOODRUN</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Courier New',monospace;user-select:none}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh;display:block;cursor:none}
+#ui{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5}
+#hud{position:absolute;top:14px;left:14px;color:#ff2020;font-size:12px;letter-spacing:2px;line-height:1.9}
+#rhud{position:absolute;top:14px;right:14px;color:#ff2020;font-size:12px;letter-spacing:2px;text-align:right;line-height:1.9}
+#stylebox{margin-top:8px;text-align:right}
+#stylerank{font-size:42px;font-weight:900;letter-spacing:4px;color:#888;text-shadow:0 0 16px rgba(255,50,50,0.6);line-height:1;transition:all .15s}
+#stylename{font-size:10px;letter-spacing:3px;font-weight:bold;color:#ffaa00;margin-top:2px}
+#stylemeter{width:110px;height:5px;background:#1a0000;border:1px solid #440000;margin-left:auto;margin-top:4px;overflow:hidden}
+#stylefill{height:100%;width:0%;background:linear-gradient(90deg,#ff4400,#ffea00);transition:width .08s}
+#bossbar{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);width:360px;display:none}
+#bossbar .bname{color:#ff2020;font-size:12px;letter-spacing:3px;text-align:center;margin-bottom:4px;font-weight:bold}
+#bossbar .btrack{width:100%;height:12px;background:#1a0000;border:1px solid #440000;border-radius:2px;overflow:hidden}
+#bossbar .bfill{height:100%;background:linear-gradient(90deg,#ff2020,#ff6600);transition:width .15s}
+#bossbar .bphase{color:#aa2222;font-size:9px;letter-spacing:2px;text-align:center;margin-top:3px;font-weight:bold}
+#abilities{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+.abil{width:54px;height:54px;border:2px solid #330000;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;letter-spacing:1px;color:#880000;position:relative;overflow:hidden;background:rgba(10,0,0,0.6)}
+.abil .akey{font-size:14px;color:#ff2020;font-weight:bold}
+.abil .acd{position:absolute;bottom:0;left:0;height:3px;background:#ff2020;transition:width .1s}
+.abil.ready{border-color:#ff2020;color:#ff2020;box-shadow:0 0 10px rgba(255,32,32,0.3)}
+#ann{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);font-size:50px;letter-spacing:10px;font-weight:bold;color:#ff2020;opacity:0;pointer-events:none;text-align:center;white-space:nowrap;transition:opacity .25s;text-shadow:0 0 20px rgba(255,0,0,0.6)}
+#ann .sub2{font-size:16px;letter-spacing:4px;color:#ff8888;display:block;margin-top:6px;font-weight:normal}
+#combo{position:absolute;bottom:84px;left:50%;transform:translateX(-50%);font-size:18px;letter-spacing:4px;color:#ffcc00;opacity:0;pointer-events:none;font-weight:bold}
+#overdriveVignette{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4;box-shadow:inset 0 0 90px rgba(255,200,0,0.45), inset 0 0 160px rgba(255,20,0,0.35);opacity:0;transition:opacity .3s}
+#overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ff2020;z-index:25;pointer-events:all;overflow-y:auto;padding:20px;cursor:default}
+#overlay h1{font-size:68px;letter-spacing:14px;margin-bottom:6px}
+.sub{font-size:13px;letter-spacing:5px;color:#882222;margin-bottom:34px}
+.btn{border:2px solid #ff2020;color:#ff2020;background:transparent;padding:12px 32px;font-family:'Courier New',monospace;font-size:13px;letter-spacing:3px;cursor:pointer;text-transform:uppercase;margin:5px;transition:all .15s}
+.btn:hover{background:#ff2020;color:#000;box-shadow:0 0 20px rgba(255,32,32,0.6)}
+.btn-sm{padding:8px 18px;font-size:11px;letter-spacing:2px}
+.tips{margin-top:24px;color:#662222;font-size:10px;letter-spacing:2px;line-height:2.2;text-align:center}
+#mute{position:absolute;top:14px;left:50%;transform:translateX(-50%);border:1px solid #330000;color:#550000;background:transparent;font-family:'Courier New',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;padding:4px 10px;z-index:6;pointer-events:all}
+#mute:hover{color:#ff2020;border-color:#ff2020}
+@keyframes hpulse{0%,100%{opacity:1}50%{opacity:.6}}
+#overlay h1{animation:hpulse 1.4s infinite}
+
+/* Modals & Dialogs */
+.modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(8,1,2,0.97);border:2px solid #ff2020;box-shadow:0 0 40px rgba(255,30,30,0.5);color:#ff2020;z-index:35;padding:24px 30px;display:none;flex-direction:column;max-width:840px;width:92%;max-height:86vh;overflow-y:auto;border-radius:3px;cursor:default}
+.modal h2{font-size:26px;letter-spacing:6px;text-align:center;margin-bottom:14px;color:#ff3333;text-shadow:0 0 14px #ff2020}
+.modal::-webkit-scrollbar{width:6px}
+.modal::-webkit-scrollbar-track{background:#0a0000}
+.modal::-webkit-scrollbar-thumb{background:#661111;border-radius:3px}
+.tab-bar{display:flex;justify-content:center;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.tab-btn{padding:7px 16px;font-family:inherit;font-size:11px;border:1px solid #661111;background:#150000;color:#aa4444;cursor:pointer;letter-spacing:2px;transition:all .15s}
+.tab-btn.active,.tab-btn:hover{border-color:#ff2020;background:#ff2020;color:#000;font-weight:bold;box-shadow:0 0 12px rgba(255,32,32,0.5)}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-bottom:12px}
+.info-card{background:rgba(25,0,0,0.7);border:1px solid #441111;padding:12px;border-radius:2px;font-size:11px;line-height:1.6;color:#ccc}
+.info-card b{color:#ffaa00}
+.badge-tag{display:inline-block;padding:2px 6px;font-size:9px;font-weight:bold;letter-spacing:1px;border-radius:2px;margin-bottom:6px;color:#000}
+.lead-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:11px;letter-spacing:1px}
+.lead-table th{border-bottom:2px solid #ff2020;padding:8px 6px;text-align:left;color:#ffaa00;font-size:10px}
+.lead-table td{border-bottom:1px solid #280808;padding:7px 6px;color:#eee}
+.lead-table tr:hover td{background:rgba(255,40,40,0.12)}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;max-width:620px;margin:14px 0}
+.stat-box{background:rgba(20,0,0,0.6);border:1px solid #441111;padding:10px;text-align:center}
+.stat-val{font-size:18px;font-weight:900;color:#fff;margin-top:2px}
+.stat-lbl{font-size:9px;letter-spacing:2px;color:#ff8888}
+
+/* Collection & Achievements */
+.ach-card{background:rgba(20,2,2,0.75);border:1px solid #441111;padding:12px;border-radius:3px;display:flex;flex-direction:column;gap:5px;position:relative}
+.ach-card.unlocked{border-color:#ff3333;background:rgba(32,5,5,0.85);box-shadow:0 0 12px rgba(255,50,50,0.25)}
+.ach-card.locked{opacity:0.55}
+.medal-card{background:rgba(18,2,2,0.75);border:1px solid #331111;padding:12px;border-radius:3px;display:flex;align-items:center;gap:12px}
+.medal-icon-box{width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:22px;border-radius:3px;flex-shrink:0;border:1px solid}
+.outfit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-bottom:12px}
+.outfit-card{background:rgba(16,2,2,0.85);border:1px solid #441111;padding:14px;border-radius:3px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;position:relative}
+.outfit-card.equipped{border-color:#00ffff;box-shadow:0 0 18px rgba(0,255,255,0.45)}
+.outfit-card.unlocked{border-color:#ff4444}
+.outfit-card.locked{opacity:0.5}
+.outfit-preview{width:110px;height:110px;background:#050101;border:1px solid #331111;border-radius:2px;display:block;margin:0 auto}
+.btn-equip{background:#ff2020;color:#000;border:none;padding:6px 18px;font-family:inherit;font-size:11px;font-weight:bold;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .15s;border-radius:2px}
+.btn-equip:hover{background:#ff5555;box-shadow:0 0 14px rgba(255,50,50,0.8)}
+.btn-equipped{background:#00ffff;color:#000;border:none;padding:6px 18px;font-family:inherit;font-size:11px;font-weight:bold;letter-spacing:2px;border-radius:2px;cursor:default}
+
+/* Neural Auth Gateway Modal & Runner Account Badge */
+.auth-input{width:100%;padding:10px 14px;background:#140103;border:1px solid #661111;color:#fff;font-family:inherit;font-size:12px;letter-spacing:2px;outline:none;margin-bottom:12px;border-radius:2px;transition:border-color .15s}
+.auth-input:focus{border-color:#ff2020;box-shadow:0 0 10px rgba(255,32,32,0.4)}
+.auth-msg{padding:9px 14px;border-radius:2px;font-size:11px;letter-spacing:1px;margin-bottom:14px;display:none;line-height:1.5}
+.auth-msg.error{display:block;background:rgba(80,0,0,0.75);border:1px solid #ff2222;color:#ff8888;box-shadow:0 0 10px rgba(255,0,0,0.3)}
+.auth-msg.success{display:block;background:rgba(0,60,30,0.75);border:1px solid #00ff88;color:#88ffbb;box-shadow:0 0 10px rgba(0,255,136,0.3)}
+.auth-msg.loading{display:block;background:rgba(0,40,60,0.75);border:1px solid #00ccff;color:#88ddff;box-shadow:0 0 10px rgba(0,204,255,0.3)}
+.runner-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(18,2,4,0.88);border:1px solid #441111;border-radius:2px;font-size:11px;letter-spacing:2px;color:#ffaa00;margin-bottom:16px}
+.runner-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.runner-dot.online{background:#00ff88;box-shadow:0 0 8px #00ff88}
+.runner-dot.guest{background:#ffaa00;box-shadow:0 0 6px #ffaa00}
+</style>
+<!-- SUPABASE CLIENT, CONFIG & DB MODULES -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="supabase-client.js"></script>
+<script src="supabase-db.js"></script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="overdriveVignette"></div>
+<div id="ui">
+  <div id="hud">
+    <div id="hph">HP: ██████████</div>
+    <div id="wph">WEAPON: PISTOL</div>
+    <div id="amh">AMMO: ∞</div>
+    <div id="klh">KILLS: 0</div>
+  </div>
+  <div id="rhud">
+    <div id="sch">SCORE: 0</div>
+    <div id="wvh">WAVE: 1 / 16</div>
+    <div id="muh" style="color:#ffcc00">×1</div>
+    <div id="stylebox">
+      <div id="stylerank">D</div>
+      <div id="stylename">DISMAL</div>
+      <div id="stylemeter"><div id="stylefill"></div></div>
+    </div>
+  </div>
+  <div id="bossbar">
+    <div class="bname" id="bossname">BOSS</div>
+    <div class="btrack"><div class="bfill" id="bossfill"></div></div>
+    <div class="bphase" id="bossphase">PHASE 1</div>
+  </div>
+  <div id="abilities">
+    <div class="abil" id="a1"><div class="akey">Q</div><div>RAGE</div><div class="acd" id="cd1" style="width:100%"></div></div>
+    <div class="abil" id="a2"><div class="akey">E</div><div>HEAL</div><div class="acd" id="cd2" style="width:100%"></div></div>
+    <div class="abil" id="a3"><div class="akey">F</div><div>NUKE</div><div class="acd" id="cd3" style="width:100%"></div></div>
+  </div>
+  <div id="ann"><span id="annsub" class="sub2"></span></div>
+  <div id="combo"></div>
+</div>
+<button id="mute">♪ [M] BLOODLINE</button>
+
+<!-- PAUSE MODAL -->
+<div id="pauseModal" class="modal">
+  <h2>SYSTEM PAUSED</h2>
+  <div id="pauseStats" style="display:flex;justify-content:center;gap:18px;margin-bottom:20px;font-size:12px;color:#aaa;flex-wrap:wrap"></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <button class="btn" id="resumeBtn">RESUME [ESC / P]</button>
+    <button class="btn btn-sm" id="pauseHowBtn">HOW TO PLAY</button>
+    <button class="btn btn-sm" id="pauseLeadBtn">LEADERBOARD</button>
+    <button class="btn btn-sm" id="pauseColBtn">COLLECTION</button>
+    <button class="btn btn-sm" id="pauseRetryBtn">RESTART RUN [R]</button>
+    <button class="btn btn-sm" id="pauseTrackBtn">CYCLE AUDIO TRACK [M]</button>
+    <button class="btn btn-sm" id="pauseQuitBtn" style="border-color:#661111;color:#884444">QUIT TO MENU</button>
+  </div>
+</div>
+
+<!-- HOW TO PLAY MODAL -->
+<div id="howToPlayModal" class="modal">
+  <h2>COMBAT ARCHIVES</h2>
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="tab-ctrl">CONTROLS</button>
+    <button class="tab-btn" data-tab="tab-mech">COMBAT COUNTERS</button>
+    <button class="tab-btn" data-tab="tab-rank">STYLE & OVERDRIVE</button>
+    <button class="tab-btn" data-tab="tab-score">SCORING & COMBOS</button>
+    <button class="tab-btn" data-tab="tab-wpns">ARSENAL (16)</button>
+  </div>
+  <div id="howContent" style="min-height:260px;margin-bottom:14px"></div>
+  <button class="btn btn-sm" id="closeHowBtn" style="align-self:center">CLOSE [ESC]</button>
+</div>
+
+<!-- LEADERBOARD MODAL -->
+<div id="leaderboardModal" class="modal">
+  <h2>GLOBAL LEADERBOARD</h2>
+  <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:14px;font-size:11px">
+    <span style="color:#ffaa00">RUNNER TAG:</span>
+    <input type="text" id="runnerNameInput" maxlength="14" style="background:#110000;border:1px solid #ff2020;color:#fff;padding:4px 8px;font-family:inherit;font-size:12px;text-transform:uppercase;width:140px">
+    <button class="btn btn-sm" id="saveTagBtn" style="padding:4px 14px;margin:0">SAVE</button>
+  </div>
+  <div id="leaderboardContainer" style="overflow-x:auto"></div>
+  <button class="btn btn-sm" id="closeLeadBtn" style="align-self:center;margin-top:16px">CLOSE [ESC]</button>
+</div>
+
+<!-- COLLECTION MODAL -->
+<div id="collectionModal" class="modal" style="max-width:880px">
+  <h2>BLOODRUN ARCHIVES & COLLECTION</h2>
+  <div id="colProgressHeader" style="display:flex;justify-content:space-around;background:rgba(20,0,0,0.7);border:1px solid #441111;padding:10px 14px;margin-bottom:14px;font-size:11px;letter-spacing:1px;flex-wrap:wrap;gap:8px">
+    <div>ACHIEVEMENTS: <b id="colAchCount" style="color:#ffcc00">0 / 20</b></div>
+    <div>MEDALS: <b id="colMedCount" style="color:#00e5ff">0 / 20</b></div>
+    <div>OUTFITS: <b id="colOutCount" style="color:#ff0055">1 / 10</b></div>
+    <div>COMPLETION: <b id="colTotalPct" style="color:#44ff88">5%</b></div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" data-coltab="col-ach">ACHIEVEMENTS</button>
+    <button class="tab-btn" data-coltab="col-med">MEDALS</button>
+    <button class="tab-btn" data-coltab="col-out">OUTFITS</button>
+  </div>
+  <div id="colContent" style="min-height:300px;margin-bottom:14px;overflow-y:auto;max-height:54vh;padding-right:4px"></div>
+  <button class="btn btn-sm" id="closeColBtn" style="align-self:center">CLOSE [ESC]</button>
+</div>
+
+<!-- SUPABASE NEURAL AUTH GATEWAY MODAL -->
+<div id="authModal" class="modal" style="max-width:500px">
+  <h2>NEURAL AUTH GATEWAY</h2>
+  <div style="text-align:center;font-size:10px;letter-spacing:3px;color:#ff8888;margin-top:-8px;margin-bottom:14px">
+    SUPABASE RUNNER ACCOUNT SYSTEM
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" id="authTabLogin" data-authtab="login">LOGIN</button>
+    <button class="tab-btn" id="authTabSignup" data-authtab="signup">SIGN UP</button>
+  </div>
+
+  <div id="authMsg" class="auth-msg"></div>
+
+  <!-- LOGIN TAB -->
+  <div id="authPanelLogin">
+    <div style="font-size:10px;color:#ffaaaa;letter-spacing:1px;margin-bottom:6px">OPERATIVE EMAIL</div>
+    <input type="email" id="authLoginEmail" class="auth-input" placeholder="runner@bloodrun.net" autocomplete="email">
+    <div style="font-size:10px;color:#ffaaaa;letter-spacing:1px;margin-bottom:6px">ACCESS KEY (PASSWORD)</div>
+    <input type="password" id="authLoginPassword" class="auth-input" placeholder="••••••••" autocomplete="current-password">
+    <button class="btn" id="authSubmitLogin" style="width:100%;margin:10px 0 0 0">ENTER ARENA [LOGIN]</button>
+  </div>
+
+  <!-- SIGN UP TAB -->
+  <div id="authPanelSignup" style="display:none">
+    <div style="font-size:10px;color:#ffaaaa;letter-spacing:1px;margin-bottom:6px">RUNNER CALL-SIGN (HANDLE)</div>
+    <input type="text" id="authSignupName" class="auth-input" placeholder="CYBER_SLAYER" maxlength="18">
+    <div style="font-size:10px;color:#ffaaaa;letter-spacing:1px;margin-bottom:6px">OPERATIVE EMAIL</div>
+    <input type="email" id="authSignupEmail" class="auth-input" placeholder="runner@bloodrun.net" autocomplete="email">
+    <div style="font-size:10px;color:#ffaaaa;letter-spacing:1px;margin-bottom:6px">ACCESS KEY (PASSWORD - MIN 6 CHARS)</div>
+    <input type="password" id="authSignupPassword" class="auth-input" placeholder="••••••••" autocomplete="new-password">
+    <button class="btn" id="authSubmitSignup" style="width:100%;margin:10px 0 0 0">REGISTER RUNNER</button>
+    <div style="font-size:10px;color:#ffaa44;background:rgba(255,170,0,0.08);border:1px dashed rgba(255,170,0,0.4);padding:8px 12px;margin-top:10px;border-radius:2px;line-height:1.4;letter-spacing:0.5px">
+      ⚠ <b style="color:#ffd700">SPAM FOLDER NOTICE:</b> Confirmation emails may sometimes arrive in your <b>SPAM / JUNK</b> folder. Please check your spam box if the verification link does not appear in your inbox.
+    </div>
+  </div>
+
+  <button class="btn btn-sm" id="closeAuthBtn" style="align-self:center;margin-top:16px">CLOSE [ESC]</button>
+</div>
+
+<!-- IN-GAME ACHIEVEMENT TOAST -->
+<div id="achToast" style="position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-150%);background:rgba(12,1,3,0.96);border:2px solid #ffd700;box-shadow:0 0 25px rgba(255,215,0,0.5);padding:10px 24px;border-radius:3px;color:#fff;z-index:99;pointer-events:none;transition:transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);text-align:center;min-width:300px">
+  <div style="font-size:9px;letter-spacing:3px;color:#ffd700;font-weight:bold">★ ACHIEVEMENT UNLOCKED ★</div>
+  <div id="achToastTitle" style="font-size:14px;letter-spacing:2px;color:#fff;margin:3px 0;font-weight:bold"></div>
+  <div id="achToastSub" style="font-size:10px;letter-spacing:1px;color:#ff8888"></div>
+</div>
+
+<!-- MAIN MENU & RESULTS OVERLAY -->
+<div id="overlay">
+  <!-- RUNNER ACCOUNT STATUS BADGE (Persistent across all menu & post-game results screens) -->
+  <div id="runnerAccountBar" class="runner-badge" style="position:relative;z-index:30;margin-bottom:18px">
+    <span id="runnerStatusDot" class="runner-dot guest"></span>
+    <span id="runnerStatusText">RUNNER: GUEST</span>
+    <button class="btn btn-sm" id="authModalBtn" style="margin:0 0 0 6px;padding:4px 10px;font-size:10px">LOGIN / SIGN UP</button>
+    <button class="btn btn-sm" id="logoutBtn" style="margin:0 0 0 6px;padding:4px 10px;font-size:10px;display:none">LOGOUT</button>
+  </div>
+
+  <div id="overlayContent" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%">
+    <h1>BLOODRUN</h1>
+    <div class="sub">HIGH-SCORE ARCADE SHOOTER · 16 WAVES · NO MERCY</div>
+    <div id="mainBestScore" style="color:#ffd700;font-size:12px;letter-spacing:3px;margin-top:-22px;margin-bottom:20px"></div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:6px">
+      <button class="btn" id="startBtn">[ START RUN ]</button>
+      <button class="btn" id="menuColBtn">COLLECTION</button>
+      <button class="btn" id="menuLeadBtn">LEADERBOARD</button>
+      <button class="btn" id="menuHowBtn">HOW TO PLAY</button>
+    </div>
+    <div class="tips">
+      WASD — MOVE &nbsp;|&nbsp; MOUSE — AIM &nbsp;|&nbsp; CLICK/SPACE — SHOOT<br>
+      SHIFT — DASH (I-FRAMES) &nbsp;|&nbsp; Q — RAGE &nbsp;|&nbsp; E — HEAL &nbsp;|&nbsp; F — NUKE &nbsp;|&nbsp; P/ESC — PAUSE &nbsp;|&nbsp; R — RESTART<br>
+      SPACE/CLICK — SKIP CUTSCENES &nbsp;|&nbsp; M — MUSIC (4 STYLES) &nbsp;|&nbsp; CHASE SSS BLOODGOD!
+    </div>
+  </div>
+</div>
+<script>
+const WT=32,TILE=64,MAX_WAVE=16,ARENA_SCALE=0.78;
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+let W,H,walls=[];
+const resize=()=>{
+  const winW=(typeof window!=='undefined'&&window.innerWidth)?window.innerWidth:1280;
+  const winH=(typeof window!=='undefined'&&window.innerHeight)?window.innerHeight:720;
+  canvas.width=winW;
+  canvas.height=winH;
+  W=Math.round(canvas.width/ARENA_SCALE);
+  H=Math.round(canvas.height/ARENA_SCALE);
+  if(walls&&walls.length>=4){
+    walls[0]={x:0,y:0,w:W,h:WT};
+    walls[1]={x:0,y:H-WT,w:W,h:WT};
+    walls[2]={x:0,y:0,w:WT,h:H};
+    walls[3]={x:W-WT,y:0,w:WT,h:H};
+  }
+};
+resize(); window.addEventListener('resize',resize);
+
+const MAX_P=120,MAX_D=90,MAX_B=450;
+
+// ════════════════════════════════════════════════════════════
+// AUDIO ENGINE: 4 DISTINCT STYLES & VIBES
+// 1. NEON OUTRUN (124 BPM)       — 80s Synthwave / Retrowave
+// 2. ACID OVERDRIVE (142 BPM)    — 303 Resonant Acid Techno
+// 3. CYBER INDUSTRIAL (104 BPM)  — Doom Cybermetal / Heavy EBM
+// 4. NEUROFUNK SIEGE (174 BPM)   — High-Speed Drum & Bass
+// ════════════════════════════════════════════════════════════
+let AC=null,musicPlaying=false,musicOn=true,masterGain=null;
+let comp=null,bassG=null,musicInterval=null,nextMusicTime=0;
+let currentTrack=0,distCurve=null;
+
+const TRACKS=[
+  {
+    name:'NEON OUTRUN',
+    genre:'RETROWAVE / SYNTHWAVE',
+    bpm:124,
+    style:'synthwave',
+    bass:[55, 55, 55, 55, 43.65, 43.65, 48.99, 48.99],
+    lead:[220, 0, 261.6, 293.7, 329.6, 0, 261.6, 0, 349.2, 0, 329.6, 293.7, 261.6, 0, 220, 0]
+  },
+  {
+    name:'ACID OVERDRIVE',
+    genre:'303 ACID TECHNO',
+    bpm:142,
+    style:'acid',
+    acid:[65.4, 65.4, 130.8, 65.4, 77.8, 65.4, 116.5, 98.0, 65.4, 65.4, 130.8, 155.6, 87.3, 77.8, 65.4, 116.5],
+    stabs:[0, 523.3, 0, 0, 0, 466.2, 0, 0, 0, 523.3, 0, 587.3, 0, 466.2, 0, 0]
+  },
+  {
+    name:'CYBER INDUSTRIAL',
+    genre:'DOOM CYBERMETAL',
+    bpm:104,
+    style:'industrial',
+    bass:[36.7, 36.7, 36.7, 51.9, 36.7, 0, 41.2, 38.9],
+    lead:[293.7, 0, 293.7, 415.3, 0, 0, 329.6, 311.1, 293.7, 0, 0, 415.3, 392.0, 329.6, 293.7, 0]
+  },
+  {
+    name:'NEUROFUNK SIEGE',
+    genre:'DRUM & BASS',
+    bpm:174,
+    style:'dnb',
+    reese:[43.65, 43.65, 0, 58.27, 51.91, 51.91, 0, 65.41],
+    lead:[349.2, 0, 415.3, 0, 523.3, 622.3, 523.3, 0, 415.3, 0, 349.2, 0, 698.5, 622.3, 523.3, 415.3]
+  }
+];
+
+function makeDistortionCurve(k=55){
+  const n=44100,curve=new Float32Array(n),deg=Math.PI/180;
+  for(let i=0;i<n;++i){const x=i*2/n-1;curve[i]=((3+k)*x*20*deg)/(Math.PI+k*Math.abs(x));}
+  return curve;
+}
+
+function initAudio(){
+  if(AC)return;
+  AC=new(window.AudioContext||window.webkitAudioContext)();
+  masterGain=AC.createGain();masterGain.gain.value=.28;masterGain.connect(AC.destination);
+  comp=AC.createDynamicsCompressor();comp.threshold.value=-12;comp.ratio.value=4;comp.connect(masterGain);
+  bassG=AC.createGain();bassG.gain.value=.52;bassG.connect(comp);
+  distCurve=makeDistortionCurve(65);
+}
+
+// ── CUSTOM INSTRUMENT SYNTHESIS PER GENRE ───────────────────
+function kick(w,style){
+  if(!AC)return;
+  const o=AC.createOscillator(),g=AC.createGain();o.type='sine';
+  if(style==='acid'){
+    // 909 Techno Sub Kick: punchy transient diving into 36Hz sub
+    o.frequency.setValueAtTime(220,w);o.frequency.exponentialRampToValueAtTime(36,w+.22);
+    g.gain.setValueAtTime(1.35,w);g.gain.exponentialRampToValueAtTime(.001,w+.26);
+    o.connect(g);g.connect(comp);o.start(w);o.stop(w+.28);
+  } else if(style==='industrial'){
+    // Heavy Overdriven Industrial Kick
+    o.frequency.setValueAtTime(130,w);o.frequency.exponentialRampToValueAtTime(26,w+.28);
+    g.gain.setValueAtTime(1.4,w);g.gain.exponentialRampToValueAtTime(.001,w+.32);
+    o.connect(g);g.connect(comp);o.start(w);o.stop(w+.34);
+  } else if(style==='dnb'){
+    // Snappy Punchy DnB Breakbeat Kick
+    o.frequency.setValueAtTime(190,w);o.frequency.exponentialRampToValueAtTime(45,w+.13);
+    g.gain.setValueAtTime(1.2,w);g.gain.exponentialRampToValueAtTime(.001,w+.14);
+    o.connect(g);g.connect(comp);o.start(w);o.stop(w+.16);
+  } else {
+    // 80s Synthwave Punch Kick
+    o.frequency.setValueAtTime(155,w);o.frequency.exponentialRampToValueAtTime(32,w+.19);
+    g.gain.setValueAtTime(1.15,w);g.gain.exponentialRampToValueAtTime(.001,w+.20);
+    o.connect(g);g.connect(comp);o.start(w);o.stop(w+.22);
+  }
+}
+
+function snare(w,style,vol){
+  if(!AC)return;
+  const v=vol||1;
+  if(style==='acid'){
+    // 909 Handclap: 3 rapid micro-bursts of filtered noise
+    for(let k=0;k<3;k++){
+      const buf=AC.createBuffer(1,AC.sampleRate*.03,AC.sampleRate),d=buf.getChannelData(0);
+      for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.5);
+      const s=AC.createBufferSource(),hp=AC.createBiquadFilter(),g=AC.createGain();
+      hp.type='bandpass';hp.frequency.value=1600;hp.Q.value=1.5;
+      g.gain.value=(k===2?.32:.18)*v;
+      s.buffer=buf;s.connect(hp);hp.connect(g);g.connect(comp);
+      s.start(w+k*0.011);s.stop(w+k*0.011+.03);
+    }
+  } else if(style==='industrial'){
+    // Industrial Mechanical Metal Clang: ring oscillator + noise
+    const ring=AC.createOscillator(),rg=AC.createGain();
+    ring.type='sawtooth';ring.frequency.setValueAtTime(460,w);
+    ring.frequency.exponentialRampToValueAtTime(110,w+.16);
+    rg.gain.setValueAtTime(.24*v,w);rg.gain.exponentialRampToValueAtTime(.001,w+.18);
+    ring.connect(rg);rg.connect(comp);ring.start(w);ring.stop(w+.19);
+
+    const buf=AC.createBuffer(1,AC.sampleRate*.22,AC.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.8);
+    const s=AC.createBufferSource(),g=AC.createGain();
+    g.gain.value=.38*v;s.buffer=buf;s.connect(g);g.connect(comp);s.start(w);s.stop(w+.22);
+  } else if(style==='dnb'){
+    // Snappy High-Tuned DnB Breakbeat Snare
+    const o=AC.createOscillator(),og=AC.createGain();
+    o.type='triangle';o.frequency.setValueAtTime(260,w);o.frequency.exponentialRampToValueAtTime(120,w+.07);
+    og.gain.setValueAtTime(.3*v,w);og.gain.exponentialRampToValueAtTime(.001,w+.08);
+    o.connect(og);og.connect(comp);o.start(w);o.stop(w+.09);
+
+    const buf=AC.createBuffer(1,AC.sampleRate*.11,AC.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.5);
+    const s=AC.createBufferSource(),g=AC.createGain();
+    g.gain.value=.28*v;s.buffer=buf;s.connect(g);g.connect(comp);s.start(w);s.stop(w+.11);
+  } else {
+    // 80s Gated Reverb Snare
+    const o=AC.createOscillator(),og=AC.createGain();
+    o.type='sine';o.frequency.setValueAtTime(180,w);o.frequency.exponentialRampToValueAtTime(70,w+.09);
+    og.gain.setValueAtTime(.35*v,w);og.gain.exponentialRampToValueAtTime(.001,w+.1);
+    o.connect(og);og.connect(comp);o.start(w);o.stop(w+.11);
+
+    const buf=AC.createBuffer(1,AC.sampleRate*.18,AC.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.4);
+    const s=AC.createBufferSource(),hp=AC.createBiquadFilter(),g=AC.createGain();
+    hp.type='highpass';hp.frequency.value=800;
+    g.gain.value=.32*v;s.buffer=buf;s.connect(hp);hp.connect(g);g.connect(comp);s.start(w);s.stop(w+.18);
+  }
+}
+
+function hihat(w,op,vol){
+  if(!AC)return;
+  const dur=op?.16:.045;
+  const buf=AC.createBuffer(1,AC.sampleRate*dur,AC.sampleRate),d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,op?1.6:3.5);
+  const s=AC.createBufferSource(),hp=AC.createBiquadFilter(),g=AC.createGain();
+  hp.type='highpass';hp.frequency.value=op?7000:9000;
+  g.gain.value=(vol!==undefined?vol:(op?.18:.07));
+  s.buffer=buf;s.connect(hp);hp.connect(g);g.connect(comp);
+  s.start(w);s.stop(w+dur);
+}
+
+// ── BAR SCHEDULER: 4 DISTINCT GENRE IMPLEMENTATIONS ─────────
+function schedTrackBar(tIdx, w){
+  const tr=TRACKS[tIdx];
+  const BAR=(60/tr.bpm)*4;
+
+  if(tr.style==='synthwave'){
+    // 1. NEON OUTRUN (Synthwave / Retrowave)
+    for(let k=0;k<4;k++) kick(w+k*BAR/4,'synthwave');
+    snare(w+BAR/4,'synthwave'); snare(w+3*BAR/4,'synthwave');
+    for(let h=0;h<8;h++) hihat(w+h*BAR/8,false,h%2===0?.06:.11);
+
+    // Warm Analog Arpeggiated Bassline
+    for(let i=0;i<8;i++){
+      const freq=tr.bass[i];
+      if(freq){
+        const o=AC.createOscillator(),sub=AC.createOscillator(),f=AC.createBiquadFilter(),g=AC.createGain();
+        o.type='sawtooth';o.frequency.value=freq;
+        sub.type='sine';sub.frequency.value=freq*0.5;
+        f.type='lowpass';
+        f.frequency.setValueAtTime(1400,w+i*BAR/8);
+        f.frequency.exponentialRampToValueAtTime(320,w+i*BAR/8+BAR/8-.01);
+        f.Q.value=3.5;
+        g.gain.setValueAtTime(0,w+i*BAR/8);
+        g.gain.linearRampToValueAtTime(.42,w+i*BAR/8+.015);
+        g.gain.exponentialRampToValueAtTime(.001,w+i*BAR/8+BAR/8-.01);
+        o.connect(f);sub.connect(f);f.connect(g);g.connect(bassG);
+        o.start(w+i*BAR/8);sub.start(w+i*BAR/8);
+        o.stop(w+i*BAR/8+BAR/8);sub.stop(w+i*BAR/8+BAR/8);
+      }
+    }
+
+    // Lush 80s Polysynth Lead
+    tr.lead.forEach((hz,i)=>{
+      if(!hz)return;
+      const o1=AC.createOscillator(),o2=AC.createOscillator(),f=AC.createBiquadFilter(),g=AC.createGain();
+      o1.type='sawtooth';o1.frequency.value=hz;
+      o2.type='sawtooth';o2.frequency.value=hz*1.004;
+      f.type='lowpass';f.frequency.value=2200;
+      g.gain.setValueAtTime(0,w+i*BAR/16);
+      g.gain.linearRampToValueAtTime(.09,w+i*BAR/16+.012);
+      g.gain.exponentialRampToValueAtTime(.001,w+i*BAR/16+BAR/16);
+      o1.connect(f);o2.connect(f);f.connect(g);g.connect(comp);
+      o1.start(w+i*BAR/16);o2.start(w+i*BAR/16);
+      o1.stop(w+i*BAR/16+BAR/16);o2.stop(w+i*BAR/16+BAR/16);
+    });
+  }
+  else if(tr.style==='acid'){
+    // 2. ACID OVERDRIVE (303 Acid Techno)
+    for(let k=0;k<4;k++) kick(w+k*BAR/4,'acid');
+    snare(w+BAR/4,'acid'); snare(w+3*BAR/4,'acid');
+    for(let h=0;h<4;h++) hihat(w+h*BAR/4+BAR/8,true,.20);
+
+    // Roland TB-303 Acid Bassline Engine (High Q Resonant Filter Sweep)
+    tr.acid.forEach((hz,i)=>{
+      if(!hz)return;
+      const o=AC.createOscillator(),f=AC.createBiquadFilter(),g=AC.createGain();
+      o.type='sawtooth';o.frequency.value=hz;
+      f.type='lowpass';f.Q.value=11.0;
+      const isAccent=(i%4===2)||(i===10)||(i===14);
+      const sweepTop=isAccent?4800:2600;
+      f.frequency.setValueAtTime(380,w+i*BAR/16);
+      f.frequency.linearRampToValueAtTime(sweepTop,w+i*BAR/16+.015);
+      f.frequency.exponentialRampToValueAtTime(350,w+i*BAR/16+BAR/16-.005);
+      g.gain.setValueAtTime(0,w+i*BAR/16);
+      g.gain.linearRampToValueAtTime(isAccent?.55:.44,w+i*BAR/16+.008);
+      g.gain.exponentialRampToValueAtTime(.001,w+i*BAR/16+BAR/16-.005);
+      o.connect(f);f.connect(g);g.connect(bassG);
+      o.start(w+i*BAR/16);o.stop(w+i*BAR/16+BAR/16);
+    });
+
+    // Dark Underground Techno Chord Stabs
+    tr.stabs.forEach((hz,i)=>{
+      if(!hz)return;
+      const o=AC.createOscillator(),g=AC.createGain(),hp=AC.createBiquadFilter();
+      o.type='square';o.frequency.value=hz;
+      hp.type='highpass';hp.frequency.value=1000;
+      g.gain.setValueAtTime(.08,w+i*BAR/16);
+      g.gain.exponentialRampToValueAtTime(.001,w+i*BAR/16+.055);
+      o.connect(hp);hp.connect(g);g.connect(comp);
+      o.start(w+i*BAR/16);o.stop(w+i*BAR/16+.06);
+    });
+  }
+  else if(tr.style==='industrial'){
+    // 3. CYBER INDUSTRIAL (Doom Cybermetal / Heavy EBM)
+    kick(w,'industrial');
+    kick(w+BAR*0.1875,'industrial');
+    kick(w+BAR*0.5,'industrial');
+    kick(w+BAR*0.8125,'industrial');
+    snare(w+BAR/2,'industrial');
+    for(let h=0;h<8;h++) hihat(w+h*BAR/8,false,.07);
+
+    // Heavily Distorted Drop-D Fuzz Bass / Guitar Riff
+    for(let i=0;i<8;i++){
+      const freq=tr.bass[i];
+      if(freq){
+        const o=AC.createOscillator(),dist=AC.createWaveShaper(),f=AC.createBiquadFilter(),g=AC.createGain();
+        o.type='sawtooth';o.frequency.value=freq;
+        dist.curve=distCurve;
+        f.type='lowpass';f.frequency.value=680;f.Q.value=4.0;
+        g.gain.setValueAtTime(0,w+i*BAR/8);
+        g.gain.linearRampToValueAtTime(.65,w+i*BAR/8+.012);
+        g.gain.exponentialRampToValueAtTime(.001,w+i*BAR/8+BAR/8-.01);
+        o.connect(dist);dist.connect(f);f.connect(g);g.connect(bassG);
+        o.start(w+i*BAR/8);o.stop(w+i*BAR/8+BAR/8);
+      }
+    }
+
+    // Screeching Industrial Alarm / Chainsaw Lead
+    tr.lead.forEach((hz,i)=>{
+      if(!hz)return;
+      const o=AC.createOscillator(),dist=AC.createWaveShaper(),g=AC.createGain();
+      o.type='sawtooth';o.frequency.value=hz;
+      dist.curve=distCurve;
+      g.gain.setValueAtTime(0,w+i*BAR/16);
+      g.gain.linearRampToValueAtTime(.10,w+i*BAR/16+.01);
+      g.gain.exponentialRampToValueAtTime(.001,w+i*BAR/16+BAR/16);
+      o.connect(dist);dist.connect(g);g.connect(comp);
+      o.start(w+i*BAR/16);o.stop(w+i*BAR/16+BAR/16);
+    });
+  }
+  else if(tr.style==='dnb'){
+    // 4. NEUROFUNK SIEGE (174 BPM Drum & Bass)
+    kick(w,'dnb');
+    kick(w+BAR*0.375,'dnb');
+    snare(w+BAR*0.25,'dnb',1.0);
+    snare(w+BAR*0.75,'dnb',1.0);
+    snare(w+BAR*0.625,'dnb',0.45);
+    snare(w+BAR*0.9375,'dnb',0.35);
+    for(let h=0;h<16;h++) hihat(w+h*BAR/16,h%4===2,h%2===0?.05:.09);
+
+    // Authentic Detuned Dual-Oscillator REESE BASS with Phasing Wobble
+    for(let i=0;i<8;i++){
+      const freq=tr.reese[i];
+      if(freq){
+        const o1=AC.createOscillator(),o2=AC.createOscillator(),sub=AC.createOscillator();
+        const f=AC.createBiquadFilter(),g=AC.createGain();
+        o1.type='sawtooth';o1.frequency.value=freq*0.991;
+        o2.type='sawtooth';o2.frequency.value=freq*1.009;
+        sub.type='sine';sub.frequency.value=freq*0.5;
+        f.type='lowpass';f.frequency.value=900;f.Q.value=2.0;
+        g.gain.setValueAtTime(0,w+i*BAR/8);
+        g.gain.linearRampToValueAtTime(.52,w+i*BAR/8+.015);
+        g.gain.exponentialRampToValueAtTime(.001,w+i*BAR/8+BAR/8-.01);
+        o1.connect(f);o2.connect(f);sub.connect(f);
+        f.connect(g);g.connect(bassG);
+        o1.start(w+i*BAR/8);o2.start(w+i*BAR/8);sub.start(w+i*BAR/8);
+        o1.stop(w+i*BAR/8+BAR/8);o2.stop(w+i*BAR/8+BAR/8);sub.stop(w+i*BAR/8+BAR/8);
+      }
+    }
+
+    // 174 BPM Staccato Cyber Neuro Lead
+    tr.lead.forEach((hz,i)=>{
+      if(!hz)return;
+      const o=AC.createOscillator(),f=AC.createBiquadFilter(),g=AC.createGain();
+      o.type='square';o.frequency.value=hz;
+      f.type='bandpass';f.frequency.value=1800;f.Q.value=1.8;
+      g.gain.setValueAtTime(.09,w+i*BAR/16);
+      g.gain.exponentialRampToValueAtTime(.001,w+i*BAR/16+BAR/16*.75);
+      o.connect(f);f.connect(g);g.connect(comp);
+      o.start(w+i*BAR/16);o.stop(w+i*BAR/16+BAR/16);
+    });
+  }
+}
+
+function schedNextBars(){
+  if(!AC||!musicPlaying)return;
+  const tr=TRACKS[currentTrack];
+  const BAR=(60/tr.bpm)*4;
+  if(nextMusicTime<AC.currentTime){
+    nextMusicTime=AC.currentTime+.05;
+  }
+  let barsCount=0;
+  while(nextMusicTime<AC.currentTime+BAR*2.0&&barsCount<3){
+    schedTrackBar(currentTrack,nextMusicTime);
+    nextMusicTime+=BAR;
+    barsCount++;
+  }
+}
+
+function startMusic(){
+  if(!AC||musicPlaying)return;
+  musicPlaying=true;
+  nextMusicTime=AC.currentTime+.05;
+  schedNextBars();
+  if(musicInterval)clearInterval(musicInterval);
+  musicInterval=setInterval(()=>{
+    if(!musicPlaying){clearInterval(musicInterval);return;}
+    schedNextBars();
+  },350);
+}
+
+function stopMusic(){
+  musicPlaying=false;
+  if(musicInterval)clearInterval(musicInterval);
+}
+
+function switchTrack(tIdx,notify){
+  const idx=((tIdx%TRACKS.length)+TRACKS.length)%TRACKS.length;
+  if(idx===currentTrack&&musicPlaying)return;
+  currentTrack=idx;
+  if(musicPlaying&&AC){
+    nextMusicTime=AC.currentTime+.08;
+  }
+  updateMuteText();
+  if(notify)announce(TRACKS[currentTrack].name,'STYLE: '+TRACKS[currentTrack].genre);
+}
+
+function cycleTrack(notify){
+  if(!musicOn){
+    musicOn=true;
+    if(masterGain)masterGain.gain.value=.28;
+    updateMuteText();
+    startMusic();
+    if(notify)announce(TRACKS[currentTrack].name,'STYLE: '+TRACKS[currentTrack].genre);
+    return;
+  }
+  switchTrack(currentTrack+1,notify);
+}
+
+function updateMuteText(){
+  const muteBtn=document.getElementById('mute');
+  if(!muteBtn)return;
+  muteBtn.textContent=musicOn?`♪ [M] ${TRACKS[currentTrack].name}`:'♪ MUSIC OFF';
+}
+function sfx(t){
+  if(!AC)return;
+  const g=AC.createGain();g.connect(masterGain);
+  if(t==='shoot'){const o=AC.createOscillator();o.type='square';o.frequency.setValueAtTime(800,AC.currentTime);o.frequency.exponentialRampToValueAtTime(80,AC.currentTime+.06);g.gain.setValueAtTime(.13,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.07);o.connect(g);o.start();o.stop(AC.currentTime+.07);}
+  else if(t==='hit'){const buf=AC.createBuffer(1,AC.sampleRate*.06,AC.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);const s=AC.createBufferSource();g.gain.value=.2;s.buffer=buf;s.connect(g);s.start();s.stop(AC.currentTime+.06);}
+  else if(t==='pickup'){[660,880,1100].forEach((hz,i)=>{const o=AC.createOscillator(),gg=AC.createGain();o.type='sine';o.frequency.value=hz;gg.gain.setValueAtTime(.1,AC.currentTime+i*.06);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+i*.06+.08);o.connect(gg);gg.connect(masterGain);o.start(AC.currentTime+i*.06);o.stop(AC.currentTime+i*.06+.1);});}
+  else if(t==='boss'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(55,AC.currentTime);o.frequency.exponentialRampToValueAtTime(22,AC.currentTime+.5);gg.gain.setValueAtTime(.5,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.55);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.55);}
+  else if(t==='nuke'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(180,AC.currentTime);o.frequency.exponentialRampToValueAtTime(20,AC.currentTime+.7);gg.gain.setValueAtTime(.45,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.75);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.75);}
+  else if(t==='rage'){[440,550,660].forEach((hz,i)=>{const o=AC.createOscillator(),gg=AC.createGain();o.type='square';o.frequency.value=hz;gg.gain.setValueAtTime(.13,AC.currentTime+i*.03);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+i*.03+.14);o.connect(gg);gg.connect(masterGain);o.start(AC.currentTime+i*.03);o.stop(AC.currentTime+i*.03+.17);});}
+  else if(t==='intro'){
+    [110,0,110,0,110,0,220].forEach((hz,i)=>{if(!hz)return;const o=AC.createOscillator(),gg=AC.createGain();o.type='sawtooth';o.frequency.value=hz;gg.gain.setValueAtTime(.0,AC.currentTime+i*.18);gg.gain.linearRampToValueAtTime(.35,AC.currentTime+i*.18+.04);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+i*.18+.17);o.connect(gg);gg.connect(masterGain);o.start(AC.currentTime+i*.18);o.stop(AC.currentTime+i*.18+.2);});
+  }
+  else if(t==='laser'){const o=AC.createOscillator();o.type='sawtooth';o.frequency.setValueAtTime(1400,AC.currentTime);o.frequency.exponentialRampToValueAtTime(150,AC.currentTime+.14);g.gain.setValueAtTime(.18,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.15);o.connect(g);o.start();o.stop(AC.currentTime+.15);}
+  else if(t==='heal_aura'){const o=AC.createOscillator();o.type='sine';o.frequency.setValueAtTime(400,AC.currentTime);o.frequency.linearRampToValueAtTime(750,AC.currentTime+.18);g.gain.setValueAtTime(.12,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.2);o.connect(g);o.start();o.stop(AC.currentTime+.2);}
+  else if(t==='spawn'){const o=AC.createOscillator();o.type='sine';o.frequency.setValueAtTime(120,AC.currentTime);o.frequency.linearRampToValueAtTime(320,AC.currentTime+.12);g.gain.setValueAtTime(.09,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.13);o.connect(g);o.start();o.stop(AC.currentTime+.13);}
+  else if(t==='graze'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sine';o.frequency.setValueAtTime(1200,AC.currentTime);o.frequency.exponentialRampToValueAtTime(2400,AC.currentTime+.07);gg.gain.setValueAtTime(.16,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.08);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.08);}
+  else if(t==='crit'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(280,AC.currentTime);o.frequency.exponentialRampToValueAtTime(70,AC.currentTime+.14);gg.gain.setValueAtTime(.32,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.15);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.15);}
+  else if(t==='rankup'){[523,659,784,1046].forEach((hz,i)=>{const o=AC.createOscillator(),gg=AC.createGain();o.type='triangle';o.frequency.value=hz;gg.gain.setValueAtTime(.18,AC.currentTime+i*.04);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+i*.04+.12);o.connect(gg);gg.connect(masterGain);o.start(AC.currentTime+i*.04);o.stop(AC.currentTime+i*.04+.14);});}
+  else if(t==='guardbreak'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(420,AC.currentTime);o.frequency.exponentialRampToValueAtTime(80,AC.currentTime+.18);gg.gain.setValueAtTime(.38,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.2);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.2);}
+  else if(t==='counter'){[880,1320,1760].forEach((hz,i)=>{const o=AC.createOscillator(),gg=AC.createGain();o.type='sine';o.frequency.value=hz;gg.gain.setValueAtTime(.2,AC.currentTime+i*.03);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+i*.03+.12);o.connect(gg);gg.connect(masterGain);o.start(AC.currentTime+i*.03);o.stop(AC.currentTime+i*.03+.14);});}
+  else if(t==='overdrive'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(140,AC.currentTime);o.frequency.exponentialRampToValueAtTime(880,AC.currentTime+.35);gg.gain.setValueAtTime(.3,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.38);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.4);}
+  else if(t==='pause'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sine';o.frequency.setValueAtTime(440,AC.currentTime);o.frequency.exponentialRampToValueAtTime(160,AC.currentTime+.08);gg.gain.setValueAtTime(.15,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.09);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.1);}
+  else if(t==='unpause'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sine';o.frequency.setValueAtTime(180,AC.currentTime);o.frequency.exponentialRampToValueAtTime(520,AC.currentTime+.09);gg.gain.setValueAtTime(.15,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.1);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.11);}
+  else if(t==='railgun'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(960,AC.currentTime);o.frequency.exponentialRampToValueAtTime(90,AC.currentTime+.25);gg.gain.setValueAtTime(.35,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.28);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.3);}
+  else if(t==='flame'){const node=AC.createBufferSource(),b=AC.createBuffer(1,AC.sampleRate*.06,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;node.buffer=b;const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=550;const gg=AC.createGain();gg.gain.setValueAtTime(.12,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.06);node.connect(f);f.connect(gg);gg.connect(masterGain);node.start();}
+  else if(t==='crossbow'){const o=AC.createOscillator(),gg=AC.createGain();o.type='triangle';o.frequency.setValueAtTime(320,AC.currentTime);o.frequency.exponentialRampToValueAtTime(80,AC.currentTime+.1);gg.gain.setValueAtTime(.25,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.12);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.12);}
+  else if(t==='tesla'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(800+Math.random()*400,AC.currentTime);o.frequency.exponentialRampToValueAtTime(200,AC.currentTime+.08);gg.gain.setValueAtTime(.2,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.09);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.09);}
+  else if(t==='sawblade'){const o=AC.createOscillator(),gg=AC.createGain();o.type='square';o.frequency.setValueAtTime(480,AC.currentTime);o.frequency.linearRampToValueAtTime(920,AC.currentTime+.12);gg.gain.setValueAtTime(.15,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.14);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.14);}
+  else if(t==='vortex'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sine';o.frequency.setValueAtTime(220,AC.currentTime);o.frequency.exponentialRampToValueAtTime(40,AC.currentTime+.25);gg.gain.setValueAtTime(.35,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.28);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.28);}
+  else if(t==='flak'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(140,AC.currentTime);o.frequency.exponentialRampToValueAtTime(35,AC.currentTime+.18);gg.gain.setValueAtTime(.4,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.2);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.2);}
+  else if(t==='cryo'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sine';o.frequency.setValueAtTime(900+Math.random()*200,AC.currentTime);o.frequency.exponentialRampToValueAtTime(300,AC.currentTime+.06);gg.gain.setValueAtTime(.1,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.07);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.07);}
+  else if(t==='achievement'){[523.25,659.25,783.99,1046.50,1318.51].forEach((hz,i)=>{const o=AC.createOscillator(),gg=AC.createGain();o.type='triangle';o.frequency.setValueAtTime(hz,AC.currentTime+i*.07);gg.gain.setValueAtTime(.25,AC.currentTime+i*.07);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+i*.07+.35);o.connect(gg);gg.connect(masterGain);o.start(AC.currentTime+i*.07);o.stop(AC.currentTime+i*.07+.38);});}
+  else if(t==='ricochet'){const o=AC.createOscillator(),gg=AC.createGain();o.type='square';o.frequency.setValueAtTime(1900,AC.currentTime);o.frequency.exponentialRampToValueAtTime(800,AC.currentTime+.08);gg.gain.setValueAtTime(.18,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.09);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.09);}
+  else if(t==='wallkick'){const o=AC.createOscillator(),gg=AC.createGain();o.type='triangle';o.frequency.setValueAtTime(140,AC.currentTime);o.frequency.exponentialRampToValueAtTime(620,AC.currentTime+.14);gg.gain.setValueAtTime(.32,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.16);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.16);}
+  else if(t==='wallslam'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(110,AC.currentTime);o.frequency.exponentialRampToValueAtTime(25,AC.currentTime+.22);gg.gain.setValueAtTime(.42,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.25);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.25);}
+  else if(t==='cover'){const o=AC.createOscillator(),gg=AC.createGain();o.type='sine';o.frequency.setValueAtTime(320,AC.currentTime);o.frequency.exponentialRampToValueAtTime(640,AC.currentTime+.08);gg.gain.setValueAtTime(.12,AC.currentTime);gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.09);o.connect(gg);gg.connect(masterGain);o.start();o.stop(AC.currentTime+.09);}
+}
+
+// ════════════════════════════════════════════════════════════
+// CONSTANTS & REBALANCED WEAPONS MATRIX (16 WEAPONS)
+// ════════════════════════════════════════════════════════════
+const WEAPONS={
+  pistol:       {fire:16,dmg:2.2, spread:.02, count:1,spd:18,rng:580,name:'PISTOL',      col:'#ffdd88',ammo:Infinity,styleBonus:1.5},
+  shotgun:      {fire:42,dmg:3.2, spread:.34, count:6,spd:14,rng:310,name:'SHOTGUN',     col:'#ff8844',ammo:60,guardBreaker:true},
+  uzi:          {fire:3, dmg:1.2, spread:.14, count:1,spd:19,rng:480,name:'UZI',         col:'#44ffcc',ammo:160,comboExtender:true},
+  rifle:        {fire:22,dmg:7.5, spread:.015,count:1,spd:26,rng:900,name:'RIFLE',       col:'#ff44cc',ammo:45,pierce:2,sniperKiller:true},
+  plasma:       {fire:17,dmg:4.8, spread:.06, count:1,spd:18,rng:620,name:'PLASMA',      col:'#8844ff',ammo:80,plasmaBurn:true},
+  minigun:      {fire:2, dmg:2.2, spread:.18, count:1,spd:20,rng:540,name:'MINIGUN',     col:'#ff4444',ammo:240,slowPlayer:true},
+  grenade:      {fire:48,dmg:18,  spread:.03, count:1,spd:9.5,rng:320,name:'GRENADE',    col:'#88ff44',ammo:14,explosive:true,splashRad:105},
+  railgun:      {fire:34,dmg:24,  spread:.004,count:1,spd:34,rng:1200,name:'RAILGUN',    col:'#00ffff',ammo:24,pierce:6,railBeam:true},
+  flamethrower: {fire:2, dmg:1.15,spread:.26, count:2,spd:11,rng:270,name:'FLAMETHROWER',col:'#ff6600',ammo:240,flame:true},
+  magnum:       {fire:26,dmg:15,  spread:.01, count:1,spd:28,rng:750,name:'MAGNUM',      col:'#ffcc00',ammo:36,styleBonus:2.0,magnumKick:true,guardBreaker:true},
+  // 6 NEW WEAPONS
+  crossbow:     {fire:28,dmg:24,  spread:.008,count:1,spd:32,rng:1000,name:'CROSSBOW',    col:'#00ff88',ammo:32,pierce:4,penetratorBolt:true},
+  teslagun:     {fire:14,dmg:4.8, spread:.05, count:1,spd:22,rng:550, name:'TESLA GUN',   col:'#66eeff',ammo:95,teslaArc:true},
+  sawblade:     {fire:24,dmg:15,  spread:.04, count:1,spd:16,rng:1100,name:'SAWBLADE',    col:'#ff2a6d',ammo:40,sawRicochet:3,pierce:5},
+  vortex:       {fire:52,dmg:18,  spread:.02, count:1,spd:12,rng:480, name:'VORTEX',      col:'#a020f0',ammo:16,vortexPull:true,explosive:true,splashRad:125},
+  flakcannon:   {fire:38,dmg:12,  spread:.03, count:1,spd:18,rng:420, name:'FLAK CANNON', col:'#ffaa22',ammo:32,flakBurst:true},
+  cryobeam:     {fire:4, dmg:1.5, spread:.12, count:1,spd:21,rng:460, name:'CRYO BEAM',   col:'#aeeeee',ammo:220,cryoFreeze:true},
+};
+// Legacy mapping of weapon drops across 16 waves (for test & documentation integrity)
+const WAVE_WP=[
+  'pistol','shotgun','uzi','crossbow','rifle','teslagun','plasma','sawblade',
+  'magnum','flakcannon','minigun','cryobeam','grenade','vortex','railgun','flamethrower'
+];
+
+// Per-wave controlled pickup table: wp=weapon to spawn, hp=spawn an hp pack
+// null entries mean NO free pickup that wave — earn it or go without.
+const WAVE_PICKUPS = [
+  {wp:'shotgun',      hp:false}, // W1  — first upgrade
+  {wp:null,           hp:false}, // W2  — boss wave (boss drops HP on kill)
+  {wp:'uzi',          hp:false}, // W3
+  {wp:null,           hp:false}, // W4  — boss wave, nothing free
+  {wp:'rifle',        hp:false}, // W5
+  {wp:null,           hp:false}, // W6  — boss wave
+  {wp:'teslagun',     hp:true},  // W7  — weapon + hp (mid-run gift)
+  {wp:null,           hp:false}, // W8  — boss wave
+  {wp:'plasma',       hp:false}, // W9
+  {wp:null,           hp:false}, // W10 — boss wave (boss drops HP on kill)
+  {wp:'minigun',      hp:false}, // W11
+  {wp:null,           hp:false}, // W12 — boss wave
+  {wp:'vortex',       hp:true},  // W13 — weapon + hp (late-game lifeline)
+  {wp:null,           hp:false}, // W14 — boss wave
+  {wp:'railgun',      hp:false}, // W15 — rare endgame weapon
+  {wp:null,           hp:false}, // W16 — boss wave, earn it
+];
+
+// ────────────────────────────────────────────────────────────
+// BOSS DEFINITIONS — 8 Archetypes (Every 2 waves)
+// Bosses scaled larger (r: 34-54) for commanding presence
+// ────────────────────────────────────────────────────────────
+const BOSS_DEFS={
+  // Wave 2: First boss
+  boss1:{name:'CRUSHER',    col:'#ff3300',dc:'#660000',r:52,hp:100, spd:1.0, sc:2500,
+         title:'THE CRUSHER',     subtitle:'CHARGE CANNOT BE STOPPED',
+         ai:'crusher'},
+  // Wave 4
+  boss2:{name:'BLITZER',    col:'#ff8800',dc:'#663300',r:40,hp:110, spd:2.1, sc:3500,
+         title:'THE BLITZER',     subtitle:'TOO FAST TO TRACK',
+         ai:'blitzer'},
+  // Wave 6
+  boss3:{name:'OVERLORD',   col:'#8800ff',dc:'#330055',r:48,hp:180, spd:.75, sc:5000,
+         title:'THE OVERLORD',    subtitle:'FEAR THE HORDE',
+         ai:'overlord'},
+  // Wave 8
+  boss4:{name:'NEMESIS',    col:'#ff00ff',dc:'#550055',r:52,hp:240, spd:1.45,sc:8000,
+         title:'YOUR NEMESIS',    subtitle:'THE END IS NOW',
+         ai:'nemesis'},
+  // Wave 10
+  boss5:{name:'DREADNOUGHT',col:'#ff5500',dc:'#661100',r:58,hp:220, spd:.72, sc:11000,
+         title:'THE DREADNOUGHT', subtitle:'FORTRESS OF TOTAL ANNIHILATION',
+         ai:'dreadnought'},
+  // Wave 12
+  boss6:{name:'TEMPEST',    col:'#00e5ff',dc:'#004466',r:45,hp:360, spd:2.2, sc:14000,
+         title:'THE TEMPEST',     subtitle:'WRATH OF THE VOID STORM',
+         ai:'tempest'},
+  // Wave 14
+  boss7:{name:'PHANTOM',    col:'#bf00ff',dc:'#440066',r:48,hp:300, spd:1.35, sc:18000,
+         title:'THE PHANTOM',     subtitle:'SHADOWS OF EXTINCTION',
+         ai:'phantom'},
+  // Wave 16
+  boss8:{name:'APOCALYPSE', col:'#ff0055',dc:'#550022',r:64,hp:520, spd:1.35,sc:25000,
+         title:'APOCALYPSE',      subtitle:'THE FINAL EXTINCTION',
+         ai:'apocalypse'},
+};
+
+const BOSS_WAVE={2:'boss1',4:'boss2',6:'boss3',8:'boss4',10:'boss5',12:'boss6',14:'boss7',16:'boss8'};
+
+// ────────────────────────────────────────────────────────────
+// ENEMY DEFINITIONS — 13 Varieties
+// ────────────────────────────────────────────────────────────
+const ET={
+  // Original 7
+  grunt:      {hp:4,  spd:1.5, r:14, col:'#ff3333', dc:'#550000', dmg:1, sc:100},
+  heavy:      {hp:12, spd:.9,  r:22, col:'#ff8800', dc:'#553300', dmg:2, sc:300, square:true},
+  runner:     {hp:2,  spd:2.6, r:12, col:'#ff44cc', dc:'#550044', dmg:1, sc:150},
+  sniper:     {hp:5,  spd:.65, r:15, col:'#44ffff', dc:'#005555', dmg:2, sc:250, shooter:true, fRate:140},
+  knife:      {hp:6,  spd:2.0, r:13, col:'#aaff44', dc:'#224400', dmg:2, sc:200, melee:true},
+  shield:     {hp:5,  spd:1.1, r:18, col:'#aaaaff', dc:'#222255', dmg:2, sc:350, blocker:true},
+  bomber:     {hp:4,  spd:1.5, r:14, col:'#ffff44', dc:'#666600', dmg:3, sc:280, suicider:true},
+  // 6 New Enemy Varieties
+  shotgunner: {hp:7,  spd:1.2, r:16, col:'#c440fb', dc:'#4a0072', dmg:1, sc:320, shotgunner:true, fRate:115},
+  laser:      {hp:6,  spd:.6,  r:16, col:'#ff1744', dc:'#660011', dmg:2, sc:420, laser:true, chargeT:0},
+  splitter:   {hp:11, spd:1.0, r:20, col:'#00e676', dc:'#004d20', dmg:2, sc:360, splitter:true},
+  swarmer:    {hp:2,  spd:3.1, r:9,  col:'#69f0ae', dc:'#006930', dmg:1, sc:80,  swarmer:true},
+  stalker:    {hp:7,  spd:1.8, r:14, col:'#9c27b0', dc:'#38006b', dmg:2, sc:380, stalker:true},
+  healer:     {hp:8,  spd:1.3, r:15, col:'#ffd700', dc:'#554400', dmg:1, sc:400, healer:true},
+};
+
+// ════════════════════════════════════════════════════════════
+// STATE & PERSISTENCE
+// ════════════════════════════════════════════════════════════
+let state='menu'; // menu | intro | playing | waveclear | dead | win | paused
+let score=0,wave=1,kills=0,combo=0,comboTimer=0,mult=1;
+let waveTimer=0,waveDelay=60;
+let highScore=parseInt(localStorage.getItem('bloodrun_highscore')||'0',10);
+let bestWave=parseInt(localStorage.getItem('bloodrun_bestwave')||'1',10);
+let bestRank=localStorage.getItem('bloodrun_bestrank')||'D';
+let frame=0,lastKillFrame=0;
+let bullets=[],enemies=[],particles=[],pickups=[],decals=[],mines=[],floaters=[];
+let keys={},mX=window.innerWidth/2,mY=window.innerHeight/2,shooting=false;
+let shootCd=0,dashCd=0,dashTime=0,dashVX=0,dashVY=0;
+let rageActive=false,rageDur=0;
+let shakeX=0,shakeY=0,shakeAmt=0,flashAmt=0;
+let waveDamageTaken=0,waveStartTime=0;
+
+// Detailed Match Statistics & Replay Metrics
+let shotsFired=0,shotsHit=0,totalDamageTaken=0,peakCombo=0,peakRankIdx=0,hitstop=0;
+let isPaused=false,stateBeforePause='playing';
+let playerName=localStorage.getItem('bloodrun_playername')||'BLOODRUNNER';
+let overdriveActive=false;
+let plasmaFields=[], vortexFields=[];
+
+// ════════════════════════════════════════════════════════════
+// PURE HIGH-SCORE ARCADE WAVE DEFINITIONS & TACTICAL THEMES
+// ════════════════════════════════════════════════════════════
+let camX = 0, camY = 0;
+let worldW = typeof window !== 'undefined' ? (window.innerWidth || 1280) : 1280;
+let worldH = typeof window !== 'undefined' ? (window.innerHeight || 720) : 720;
+
+const WAVE_THEMES = {
+  // ─── ACCESSIBLE (1–4) ────────────────────────────────────────
+  1: {
+    title: 'WAVE 1',
+    desc: 'RUNNERS & GRUNTS — Learn movement, kiting, and spacing.',
+    pool: ['runner', 'grunt', 'grunt'],
+    count: 7,
+    formation: 'pincer'
+  },
+  2: {
+    title: 'WAVE 2',
+    desc: 'CRUSHER — Ramming juggernaut with runner escorts.',
+    boss: 'boss1',
+    minionCount: 3,
+    minionPool: ['runner']
+  },
+  3: {
+    title: 'WAVE 3',
+    desc: 'KNIFE RUSH — Fast melee flankers and close-range shotgunners force aggressive dodging.',
+    pool: ['knife', 'knife', 'shotgunner', 'runner'],
+    count: 9,
+    formation: 'corners'
+  },
+  4: {
+    title: 'WAVE 4',
+    desc: 'BLITZER — Agile assassin with minefield traps and knife flankers.',
+    boss: 'boss2',
+    minionCount: 3,
+    minionPool: ['knife']
+  },
+  // ─── DEMANDING (5–8) ─────────────────────────────────────────
+  5: {
+    title: 'WAVE 5',
+    desc: 'SUPPRESSION FIRE — Heavies lock you down while bombers close distance. Prioritise targets.',
+    pool: ['heavy', 'bomber', 'bomber', 'grunt', 'heavy'],
+    count: 12,
+    formation: 'surround'
+  },
+  6: {
+    title: 'WAVE 6',
+    desc: 'OVERLORD — Bullet-hell mastermind with high-speed swarmer clusters.',
+    boss: 'boss3',
+    minionCount: 4,
+    minionPool: ['swarmer']
+  },
+  7: {
+    title: 'WAVE 7',
+    desc: 'STEALTH CROSSFIRE — Invisible stalkers and long-range snipers punish camping. Stay mobile.',
+    pool: ['stalker', 'sniper', 'stalker', 'knife', 'sniper'],
+    count: 13,
+    formation: 'scattered'
+  },
+  8: {
+    title: 'WAVE 8',
+    desc: 'NEMESIS — Shield tyrant with rotating laser beams and sniper cover.',
+    boss: 'boss4',
+    minionCount: 4,
+    minionPool: ['sniper']
+  },
+  // ─── AGGRESSIVE (9–12) ───────────────────────────────────────
+  9: {
+    title: 'WAVE 9',
+    desc: 'SHIELD WALL & FLANKERS — Riot shields advance in pincer formation while healers repair. Flank them!',
+    pool: ['shield', 'healer', 'shield', 'healer', 'shotgunner', 'runner', 'heavy', 'knife', 'shotgunner'],
+    count: 15,
+    formation: 'line'
+  },
+  10: {
+    title: 'WAVE 10',
+    desc: 'DREADNOUGHT — Siege mech with shield cycles, mortar clusters, and combat support escorts.',
+    boss: 'boss5',
+    minionCount: 4,
+    minionPool: ['heavy', 'healer', 'shotgunner', 'stalker']
+  },
+  11: {
+    title: 'WAVE 11',
+    desc: 'SPLITTER CASCADE & CROSSFIRE — Splitters swarm the field while snipers lock perimeter lines. Keep moving!',
+    pool: ['splitter', 'swarmer', 'sniper', 'splitter', 'runner', 'shotgunner', 'swarmer', 'sniper'],
+    count: 16,
+    formation: 'corners'
+  },
+  12: {
+    title: 'WAVE 12',
+    desc: 'TEMPEST — Teleporting shadow master with cloaked stalkers and ranged dart crossfires.',
+    boss: 'boss6',
+    minionCount: 4,
+    minionPool: ['stalker', 'sniper', 'knife', 'laser']
+  },
+  // ─── EXTREME (13–15) ─────────────────────────────────────────
+  13: {
+    title: 'WAVE 13',
+    desc: 'ELITE STRIKE TEAM — Lasers, shielded heavies, medics and stalkers attacking as a coordinated unit.',
+    pool: ['laser', 'shield', 'healer', 'stalker', 'heavy', 'shotgunner', 'runner', 'shield', 'healer', 'stalker', 'laser', 'sniper'],
+    count: 18,
+    formation: 'surround'
+  },
+  14: {
+    title: 'WAVE 14',
+    desc: 'PHANTOM — Cloaking assassin with teleport ambushes and full specialist escort.',
+    boss: 'boss7',
+    minionCount: 4,
+    minionPool: ['laser', 'shield', 'stalker', 'healer', 'shotgunner']
+  },
+  15: {
+    title: 'WAVE 15',
+    desc: 'APOCALYPSE GAUNTLET — Maximum specialist density. Every lethal archetype coordinated to deny safe ground.',
+    pool: ['laser', 'shield', 'healer', 'stalker', 'sniper', 'splitter', 'heavy', 'shotgunner', 'bomber', 'knife', 'laser', 'stalker'],
+    count: 18,
+    formation: 'cross'
+  },
+  // ─── FINAL TEST (16) ─────────────────────────────────────────
+  16: {
+    title: 'WAVE 16 (FINAL)',
+    desc: 'APOCALYPSE — Multi-phase supreme entity with bullet-hell vortexes and relentless summons.',
+    boss: 'boss8',
+    minionCount: 4,
+    minionPool: ['laser', 'shield', 'stalker', 'healer', 'splitter', 'shotgunner']
+  }
+};
+
+
+
+// ── GLOBAL LEADERBOARD ENGINE (ONLINE SYNC + LOCAL FALLBACK) ─
+const DEFAULT_LEADERBOARD=[
+  {name:'V3KTOR',score:142800,wave:16,rank:'SSS',date:'2026-09-15'},
+  {name:'GHOST_9',score:118450,wave:16,rank:'SS',date:'2026-09-14'},
+  {name:'CYBER_VIPER',score:98600,wave:14,rank:'S',date:'2026-09-16'},
+  {name:'NULL_POINTER',score:84200,wave:13,rank:'A',date:'2026-09-12'},
+  {name:'RAZOR_JACK',score:71500,wave:11,rank:'A',date:'2026-09-17'},
+  {name:'ACID_BURN',score:58900,wave:9,rank:'B',date:'2026-09-13'},
+  {name:'NEO_BLAZE',score:46200,wave:8,rank:'B',date:'2026-09-11'},
+  {name:'MECHA_REX',score:35400,wave:6,rank:'C',date:'2026-09-10'}
+];
+
+function getLeaderboard(){
+  try{
+    const data=localStorage.getItem('bloodrun_leaderboard');
+    if(data){
+      const parsed=JSON.parse(data);
+      if(Array.isArray(parsed)&&parsed.length>0)return parsed;
+    }
+  }catch(e){}
+  return DEFAULT_LEADERBOARD;
+}
+
+function saveLeaderboard(entries){
+  try{
+    localStorage.setItem('bloodrun_leaderboard',JSON.stringify(entries.slice(0,25)));
+  }catch(e){}
+}
+
+function submitScoreToLeaderboard(name,sc,wv,rk){
+  const list=getLeaderboard();

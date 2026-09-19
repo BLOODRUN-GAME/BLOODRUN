@@ -199,7 +199,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Co
     SUPABASE RUNNER ACCOUNT SYSTEM
   </div>
 
-  <div class="tab-bar">
+  <div class="tab-bar" id="authTabsBar">
     <button class="tab-btn active" id="authTabLogin" data-authtab="login">LOGIN</button>
     <button class="tab-btn" id="authTabSignup" data-authtab="signup">SIGN UP</button>
   </div>
@@ -213,6 +213,31 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Co
     <div style="font-size:10px;color:#ffaaaa;letter-spacing:1px;margin-bottom:6px">ACCESS KEY (PASSWORD)</div>
     <input type="password" id="authLoginPassword" class="auth-input" placeholder="••••••••" autocomplete="current-password">
     <button class="btn" id="authSubmitLogin" style="width:100%;margin:10px 0 0 0">ENTER ARENA [LOGIN]</button>
+    <button class="btn btn-sm" id="authForgotBtn" style="width:100%;margin:10px 0 0 0;border-color:#661111;color:#cc6666">FORGOT PASSWORD?</button>
+  </div>
+
+
+  <!-- FORGOT PASSWORD PANEL -->
+  <div id="authPanelForgot" style="display:none">
+    <div style="text-align:center;font-size:11px;color:#ffaaaa;letter-spacing:2px;margin-bottom:14px">
+      PASSWORD RECOVERY
+    </div>
+    <div style="font-size:10px;color:#ffaaaa;letter-spacing:1px;margin-bottom:6px">OPERATIVE EMAIL</div>
+    <input type="email" id="authForgotEmail" class="auth-input" placeholder="runner@bloodrun.net" autocomplete="email">
+    <button class="btn" id="authSubmitForgot" style="width:100%;margin:10px 0 0 0">SEND RESET LINK</button>
+    <button class="btn btn-sm" id="authBackToLogin" style="width:100%;margin:8px 0 0 0;border-color:#661111;color:#cc6666">BACK TO LOGIN</button>
+  </div>
+
+  <!-- PASSWORD RECOVERY PANEL -->
+  <div id="authPanelRecovery" style="display:none">
+    <div style="text-align:center;font-size:11px;color:#ffaaaa;letter-spacing:2px;margin-bottom:14px">
+      SET NEW ACCESS KEY
+    </div>
+    <div style="font-size:10px;color:#ffaaaa;letter-spacing:1px;margin-bottom:6px">NEW PASSWORD</div>
+    <input type="password" id="authRecoveryPassword" class="auth-input" placeholder="••••••••" autocomplete="new-password">
+    <div style="font-size:10px;color:#ffaaaa;letter-spacing:1px;margin-bottom:6px">CONFIRM NEW PASSWORD</div>
+    <input type="password" id="authRecoveryPasswordConfirm" class="auth-input" placeholder="••••••••" autocomplete="new-password">
+    <button class="btn" id="authSubmitRecovery" style="width:100%;margin:10px 0 0 0">UPDATE ACCESS KEY</button>
   </div>
 
   <!-- SIGN UP TAB -->
@@ -5312,6 +5337,29 @@ function showAuthMsg(msg,type){
   el.style.display='block';
 }
 
+function setAuthPanel(panelName){
+  const ids=['authPanelLogin','authPanelSignup','authPanelForgot','authPanelRecovery'];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display='none';
+  });
+
+  const tabs=document.getElementById('authTabsBar');
+  if(tabs) tabs.style.display = (panelName==='login'||panelName==='signup') ? 'flex' : 'none';
+
+  if(panelName==='login'||panelName==='signup'){
+    showAuthTab(panelName);
+  }else{
+    const el=document.getElementById(panelName);
+    if(el) el.style.display='block';
+  }
+}
+
+function getAuthRedirectUrl(){
+  // GitHub Pages production URL, with the current path preserved.
+  return window.location.origin + window.location.pathname;
+}
+
 function showAuthTab(tabName){
   document.querySelectorAll('[data-authtab]').forEach(b=>b.classList.remove('active'));
   const btn=document.querySelector(`[data-authtab="${tabName}"]`);
@@ -5326,12 +5374,28 @@ function showAuthTab(tabName){
 
 function openAuthModal(){
   showAuthMsg('','');
-  showAuthTab('login');
+  setAuthPanel('login');
+  document.getElementById('authModal').style.display='flex';
+}
+
+function openForgotPassword(){
+  const emailInput=document.getElementById('authLoginEmail');
+  const forgotInput=document.getElementById('authForgotEmail');
+  if(forgotInput && emailInput && emailInput.value) forgotInput.value=emailInput.value;
+  showAuthMsg('ENTER YOUR OPERATIVE EMAIL TO REQUEST A PASSWORD RESET LINK.','loading');
+  setAuthPanel('authPanelForgot');
+  document.getElementById('authModal').style.display='flex';
+}
+
+function openPasswordRecovery(){
+  showAuthMsg('RECOVERY LINK ACCEPTED. SET A NEW ACCESS KEY BELOW.','success');
+  setAuthPanel('authPanelRecovery');
   document.getElementById('authModal').style.display='flex';
 }
 
 function closeAuthModal(){
   document.getElementById('authModal').style.display='none';
+  setAuthPanel('login');
   showAuthMsg('','');
 }
 
@@ -5344,6 +5408,15 @@ document.querySelectorAll('[data-authtab]').forEach(btn=>{
 
 const authModalBtn=document.getElementById('authModalBtn');
 if(authModalBtn) authModalBtn.addEventListener('click',openAuthModal);
+
+const authForgotBtn=document.getElementById('authForgotBtn');
+if(authForgotBtn) authForgotBtn.addEventListener('click',openForgotPassword);
+
+const authBackToLogin=document.getElementById('authBackToLogin');
+if(authBackToLogin) authBackToLogin.addEventListener('click',()=>{
+  setAuthPanel('login');
+  showAuthMsg('','');
+});
 
 const closeAuthBtn=document.getElementById('closeAuthBtn');
 if(closeAuthBtn) closeAuthBtn.addEventListener('click',closeAuthModal);
@@ -5366,6 +5439,58 @@ if(submitLoginBtn){
       showAuthMsg('ACCESS GRANTED. WELCOME OPERATIVE.','success');
       sfx('achievement');
       setTimeout(closeAuthModal,900);
+    }
+  });
+}
+
+// Password reset request
+const submitForgotBtn=document.getElementById('authSubmitForgot');
+if(submitForgotBtn){
+  submitForgotBtn.addEventListener('click',async()=>{
+    const email=(document.getElementById('authForgotEmail').value||'').trim();
+    if(!email){
+      showAuthMsg('PLEASE ENTER YOUR OPERATIVE EMAIL.','error');
+      return;
+    }
+
+    showAuthMsg('TRANSMITTING PASSWORD RESET REQUEST...','loading');
+    const res=await window.BloodrunAuth.requestPasswordReset(email,getAuthRedirectUrl());
+
+    if(res.error){
+      showAuthMsg(res.error.message.toUpperCase(),'error');
+    }else{
+      // Supabase intentionally does not reveal whether an account exists.
+      showAuthMsg('IF AN ACCOUNT EXISTS FOR THAT EMAIL, A RESET LINK HAS BEEN SENT. CHECK INBOX AND SPAM / JUNK.','success');
+    }
+  });
+}
+
+// Password recovery submit
+const submitRecoveryBtn=document.getElementById('authSubmitRecovery');
+if(submitRecoveryBtn){
+  submitRecoveryBtn.addEventListener('click',async()=>{
+    const password=document.getElementById('authRecoveryPassword').value||'';
+    const confirm=document.getElementById('authRecoveryPasswordConfirm').value||'';
+
+    if(password.length<6){
+      showAuthMsg('ACCESS KEY MUST CONTAIN AT LEAST 6 CHARACTERS.','error');
+      return;
+    }
+    if(password!==confirm){
+      showAuthMsg('ACCESS KEYS DO NOT MATCH.','error');
+      return;
+    }
+
+    showAuthMsg('UPDATING RUNNER ACCESS KEY...','loading');
+    const res=await window.BloodrunAuth.updatePassword(password);
+
+    if(res.error){
+      showAuthMsg(res.error.message.toUpperCase(),'error');
+    }else{
+      showAuthMsg('ACCESS KEY UPDATED SUCCESSFULLY. YOUR RUNNER ACCOUNT IS SECURED.','success');
+      document.getElementById('authRecoveryPassword').value='';
+      document.getElementById('authRecoveryPasswordConfirm').value='';
+      setTimeout(closeAuthModal,1200);
     }
   });
 }
@@ -5442,6 +5567,10 @@ if(logoutBtn){
 if(window.BloodrunAuth){
   window.BloodrunAuth.onAuthStateChange(state=>{
     updateAuthUI(state);
+
+    if(state && state.event==='PASSWORD_RECOVERY'){
+      openPasswordRecovery();
+    }
 
     if(state && state.user){
       // Sync player name for in-game HUD/leaderboard

@@ -1016,16 +1016,17 @@ const WAVE_THEMES = {
 
 
 // ── GLOBAL LEADERBOARD ENGINE (ONLINE SYNC + LOCAL FALLBACK) ─
-const DEFAULT_LEADERBOARD=[
-  {name:'V3KTOR',score:142800,wave:16,rank:'SSS',date:'2026-09-15'},
-  {name:'GHOST_9',score:118450,wave:16,rank:'SS',date:'2026-09-14'},
-  {name:'CYBER_VIPER',score:98600,wave:14,rank:'S',date:'2026-09-16'},
-  {name:'NULL_POINTER',score:84200,wave:13,rank:'A',date:'2026-09-12'},
-  {name:'RAZOR_JACK',score:71500,wave:11,rank:'A',date:'2026-09-17'},
-  {name:'ACID_BURN',score:58900,wave:9,rank:'B',date:'2026-09-13'},
-  {name:'NEO_BLAZE',score:46200,wave:8,rank:'B',date:'2026-09-11'},
-  {name:'MECHA_REX',score:35400,wave:6,rank:'C',date:'2026-09-10'}
-];
+const DEFAULT_LEADERBOARD=[];
+
+// One-time reset of the old local/demo leaderboard archive.
+// This does NOT affect player progression, achievements, outfits, or personal bests.
+try{
+  const resetKey='bloodrun_leaderboard_reset_v2';
+  if(localStorage.getItem(resetKey)!=='1'){
+    localStorage.removeItem('bloodrun_leaderboard');
+    localStorage.setItem(resetKey,'1');
+  }
+}catch(e){}
 
 function getLeaderboard(){
   try{
@@ -1088,30 +1089,27 @@ function renderLeaderboardRows(list, isCloud){
   const container=document.getElementById('leaderboardContainer');
   if(!container)return;
   const curName=(playerName||'BLOODRUNNER').toUpperCase();
-  const isFallback = (!isCloud && (!list || list === DEFAULT_LEADERBOARD || !localStorage.getItem('bloodrun_leaderboard')));
   const titleBadge=isCloud
     ? `<div style="font-size:10px;color:#00ffcc;letter-spacing:2px;margin-bottom:8px;text-align:right;font-weight:bold">● LIVE SUPABASE CLOUD LEADERBOARD</div>`
-    : (isFallback
-      ? `<div style="font-size:10px;color:#ffaa00;letter-spacing:2px;margin-bottom:8px;text-align:right;font-weight:bold">⚠ OFFLINE DEMO BENCHMARK DATA</div>`
-      : `<div style="font-size:10px;color:#44ff88;letter-spacing:2px;margin-bottom:8px;text-align:right;font-weight:bold">● LOCAL RUNNER ARCHIVE</div>`);
+    : `<div style="font-size:10px;color:#44ff88;letter-spacing:2px;margin-bottom:8px;text-align:right;font-weight:bold">● LOCAL RUNNER ARCHIVE</div>`;
 
-  let banner = '';
-  if(isFallback){
-    banner = `<div style="background:rgba(255,170,0,0.12);border:1px solid #ffaa00;color:#ffaa00;font-size:10px;padding:6px 10px;margin-bottom:10px;border-radius:3px;text-align:center">
-      ⚠ OFFLINE DEMO DATA — Live global leaderboard offline. Showing simulated arcade developer benchmarks. Complete runs or authenticate to record verified high-scores!
+  const entries=Array.isArray(list)?list:[];
+  if(entries.length===0){
+    container.innerHTML=titleBadge+`<div style="padding:28px 10px;text-align:center;color:#777;font-size:11px;letter-spacing:2px">
+      NO VERIFIED RUNS YET
+      <div style="margin-top:8px;color:#555;font-size:9px;letter-spacing:1px">BE THE FIRST RUNNER ON THE BOARD.</div>
     </div>`;
+    return;
   }
 
-  let html=titleBadge+banner+`<table class="lead-table"><thead><tr><th>#</th><th>RUNNER</th><th>GRADE</th><th>SCORE</th><th>WAVE</th><th>DATE</th></tr></thead><tbody>`;
-  const entries=(Array.isArray(list)&&list.length>0)?list:DEFAULT_LEADERBOARD;
+  let html=titleBadge+`<table class="lead-table"><thead><tr><th>#</th><th>RUNNER</th><th>GRADE</th><th>SCORE</th><th>WAVE</th><th>DATE</th></tr></thead><tbody>`;
   entries.slice(0,10).forEach((entry,idx)=>{
     const isMe=entry.name===curName;
     const rankCol=STYLE_RANKS.find(r=>r.rank===entry.rank)?.col||'#fff';
     const medal=idx===0?'🥇 1st':idx===1?'🥈 2nd':idx===2?'🥉 3rd':`#${idx+1}`;
-    const demoBadge=isFallback?`<span style="background:#222;color:#888;font-size:8px;padding:1px 4px;border-radius:2px;border:1px solid #444;margin-left:5px">DEMO</span>`:'';
     html+=`<tr style="${isMe?'background:rgba(255,215,0,0.18);font-weight:bold;':''}">
       <td style="color:${idx===0?'#ffd700':idx===1?'#c0c0c0':idx===2?'#cd7f32':'#888'}">${medal}</td>
-      <td style="color:${isMe?'#ffd700':'#fff'}">${entry.name} ${isMe?'(YOU)':''}${demoBadge}</td>
+      <td style="color:${isMe?'#ffd700':'#fff'}">${entry.name} ${isMe?'(YOU)':''}</td>
       <td style="color:${rankCol};font-weight:900">${entry.rank}</td>
       <td style="color:#ffcc00">${(entry.score||0).toLocaleString()}</td>
       <td>${entry.wave||1} / ${MAX_WAVE}</td>
@@ -1121,7 +1119,6 @@ function renderLeaderboardRows(list, isCloud){
   html+=`</tbody></table>`;
   container.innerHTML=html;
 }
-
 async function renderLeaderboard(){
   const inp=document.getElementById('runnerNameInput');
   if(inp)inp.value=playerName;

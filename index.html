@@ -2,32 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-  <link rel="icon" type="image/png" href="bloodrun-icon.png">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="BLOODRUN is a fast-paced browser arcade shooter: survive 16 brutal waves, defeat 8 bosses, build your style rank, and chase the global high score.">
-<meta name="keywords" content="BLOODRUN, BLOODRUN game, BLOODRUN arcade shooter, browser shooter, high score arcade game, 16 wave shooter">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://BLOODRUN-GAME.github.io/BLOODRUN/">
-<meta property="og:type" content="website">
-<meta property="og:title" content="BLOODRUN — High-Score Arcade Shooter">
-<meta property="og:description" content="Survive 16 waves. Defeat 8 bosses. Chase the highest score. Play BLOODRUN in your browser.">
-<meta property="og:url" content="https://BLOODRUN-GAME.github.io/BLOODRUN/">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="BLOODRUN — High-Score Arcade Shooter">
-<meta name="twitter:description" content="A brutal 16-wave browser arcade shooter built for score chasing and replayability.">
-<script type="application/ld+json">
-{
-  "@context":"https://schema.org",
-  "@type":"VideoGame",
-  "name":"BLOODRUN",
-  "url":"https://BLOODRUN-GAME.github.io/BLOODRUN/",
-  "description":"A fast-paced browser arcade shooter with 16 waves, 8 bosses, style ranks, and global high-score competition.",
-  "genre":["Arcade","Action","Shooter"],
-  "gamePlatform":"Web Browser",
-  "applicationCategory":"Game"
-}
-</script>
-<title>BLOODRUN — High-Score Arcade Shooter</title>
+<title>BLOODRUN</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Courier New',monospace;user-select:none}
@@ -40,7 +16,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Co
 #stylename{font-size:10px;letter-spacing:3px;font-weight:bold;color:#ffaa00;margin-top:2px}
 #stylemeter{width:110px;height:5px;background:#1a0000;border:1px solid #440000;margin-left:auto;margin-top:4px;overflow:hidden}
 #stylefill{height:100%;width:0%;background:linear-gradient(90deg,#ff4400,#ffea00);transition:width .08s}
-#bossbar{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);width:360px;display:none}
+#bossbar{position:absolute;bottom:82px;left:50%;transform:translateX(-50%);width:360px;display:none}
 #bossbar .bname{color:#ff2020;font-size:12px;letter-spacing:3px;text-align:center;margin-bottom:4px;font-weight:bold}
 #bossbar .btrack{width:100%;height:12px;background:#1a0000;border:1px solid #440000;border-radius:2px;overflow:hidden}
 #bossbar .bfill{height:100%;background:linear-gradient(90deg,#ff2020,#ff6600);transition:width .15s}
@@ -52,7 +28,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Co
 .abil.ready{border-color:#ff2020;color:#ff2020;box-shadow:0 0 10px rgba(255,32,32,0.3)}
 #ann{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);font-size:50px;letter-spacing:10px;font-weight:bold;color:#ff2020;opacity:0;pointer-events:none;text-align:center;white-space:nowrap;transition:opacity .25s;text-shadow:0 0 20px rgba(255,0,0,0.6)}
 #ann .sub2{font-size:16px;letter-spacing:4px;color:#ff8888;display:block;margin-top:6px;font-weight:normal}
-#combo{position:absolute;bottom:84px;left:50%;transform:translateX(-50%);font-size:18px;letter-spacing:4px;color:#ffcc00;opacity:0;pointer-events:none;font-weight:bold}
+#combo{position:absolute;bottom:132px;left:50%;transform:translateX(-50%);font-size:18px;letter-spacing:4px;color:#ffcc00;opacity:0;pointer-events:none;font-weight:bold}
 #overdriveVignette{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4;box-shadow:inset 0 0 90px rgba(255,200,0,0.45), inset 0 0 160px rgba(255,20,0,0.35);opacity:0;transition:opacity .3s}
 #overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ff2020;z-index:25;pointer-events:all;overflow-y:auto;padding:20px;cursor:default}
 #overlay h1{font-size:68px;letter-spacing:14px;margin-bottom:6px}
@@ -61,7 +37,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Co
 .btn:hover{background:#ff2020;color:#000;box-shadow:0 0 20px rgba(255,32,32,0.6)}
 .btn-sm{padding:8px 18px;font-size:11px;letter-spacing:2px}
 .tips{margin-top:24px;color:#662222;font-size:10px;letter-spacing:2px;line-height:2.2;text-align:center}
-#mute{position:absolute;top:14px;left:50%;transform:translateX(-50%);border:1px solid #330000;color:#550000;background:transparent;font-family:'Courier New',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;padding:4px 10px;z-index:6;pointer-events:all}
+#mute{position:absolute;top:20px;left:50%;transform:translateX(-50%);border:1px solid #330000;color:#550000;background:transparent;font-family:'Courier New',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;padding:5px 12px;z-index:6;pointer-events:all}
 #mute:hover{color:#ff2020;border-color:#ff2020}
 @keyframes hpulse{0%,100%{opacity:1}50%{opacity:.6}}
 #overlay h1{animation:hpulse 1.4s infinite}
@@ -134,7 +110,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Co
   </div>
   <div id="rhud">
     <div id="sch">SCORE: 0</div>
-    <div id="wvh">WAVE: 1 / 16</div>
+    <div id="wvh">WAVE: 1 / 30</div>
     <div id="muh" style="color:#ffcc00">×1</div>
     <div id="stylebox">
       <div id="stylerank">D</div>
@@ -223,7 +199,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Co
     SUPABASE RUNNER ACCOUNT SYSTEM
   </div>
 
-  <div class="tab-bar" id="authTabsBar">
+  <div class="tab-bar">
     <button class="tab-btn active" id="authTabLogin" data-authtab="login">LOGIN</button>
     <button class="tab-btn" id="authTabSignup" data-authtab="signup">SIGN UP</button>
   </div>
@@ -237,31 +213,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Co
     <div style="font-size:10px;color:#ffaaaa;letter-spacing:1px;margin-bottom:6px">ACCESS KEY (PASSWORD)</div>
     <input type="password" id="authLoginPassword" class="auth-input" placeholder="••••••••" autocomplete="current-password">
     <button class="btn" id="authSubmitLogin" style="width:100%;margin:10px 0 0 0">ENTER ARENA [LOGIN]</button>
-    <button class="btn btn-sm" id="authForgotBtn" style="width:100%;margin:10px 0 0 0;border-color:#661111;color:#cc6666">FORGOT PASSWORD?</button>
-  </div>
-
-
-  <!-- FORGOT PASSWORD PANEL -->
-  <div id="authPanelForgot" style="display:none">
-    <div style="text-align:center;font-size:11px;color:#ffaaaa;letter-spacing:2px;margin-bottom:14px">
-      PASSWORD RECOVERY
-    </div>
-    <div style="font-size:10px;color:#ffaaaa;letter-spacing:1px;margin-bottom:6px">OPERATIVE EMAIL</div>
-    <input type="email" id="authForgotEmail" class="auth-input" placeholder="runner@bloodrun.net" autocomplete="email">
-    <button class="btn" id="authSubmitForgot" style="width:100%;margin:10px 0 0 0">SEND RESET LINK</button>
-    <button class="btn btn-sm" id="authBackToLogin" style="width:100%;margin:8px 0 0 0;border-color:#661111;color:#cc6666">BACK TO LOGIN</button>
-  </div>
-
-  <!-- PASSWORD RECOVERY PANEL -->
-  <div id="authPanelRecovery" style="display:none">
-    <div style="text-align:center;font-size:11px;color:#ffaaaa;letter-spacing:2px;margin-bottom:14px">
-      SET NEW ACCESS KEY
-    </div>
-    <div style="font-size:10px;color:#ffaaaa;letter-spacing:1px;margin-bottom:6px">NEW PASSWORD</div>
-    <input type="password" id="authRecoveryPassword" class="auth-input" placeholder="••••••••" autocomplete="new-password">
-    <div style="font-size:10px;color:#ffaaaa;letter-spacing:1px;margin-bottom:6px">CONFIRM NEW PASSWORD</div>
-    <input type="password" id="authRecoveryPasswordConfirm" class="auth-input" placeholder="••••••••" autocomplete="new-password">
-    <button class="btn" id="authSubmitRecovery" style="width:100%;margin:10px 0 0 0">UPDATE ACCESS KEY</button>
   </div>
 
   <!-- SIGN UP TAB -->
@@ -282,7 +233,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Co
 </div>
 
 <!-- IN-GAME ACHIEVEMENT TOAST -->
-<div id="achToast" style="position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-150%);background:rgba(12,1,3,0.96);border:2px solid #ffd700;box-shadow:0 0 25px rgba(255,215,0,0.5);padding:10px 24px;border-radius:3px;color:#fff;z-index:99;pointer-events:none;transition:transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);text-align:center;min-width:300px">
+<div id="achToast" style="position:fixed;top:82px;left:50%;transform:translateX(-50%) translateY(calc(-100% - 120px));opacity:0;visibility:hidden;background:rgba(12,1,3,0.96);border:2px solid #ffd700;box-shadow:0 0 25px rgba(255,215,0,0.5);padding:10px 24px;border-radius:3px;color:#fff;z-index:99;pointer-events:none;transition:transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s ease;text-align:center;min-width:280px;max-width:min(440px,calc(100vw - 40px));box-sizing:border-box">
   <div style="font-size:9px;letter-spacing:3px;color:#ffd700;font-weight:bold">★ ACHIEVEMENT UNLOCKED ★</div>
   <div id="achToastTitle" style="font-size:14px;letter-spacing:2px;color:#fff;margin:3px 0;font-weight:bold"></div>
   <div id="achToastSub" style="font-size:10px;letter-spacing:1px;color:#ff8888"></div>
@@ -300,7 +251,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Co
 
   <div id="overlayContent" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%">
     <h1>BLOODRUN</h1>
-    <div class="sub">HIGH-SCORE ARCADE SHOOTER · 16 WAVES · NO MERCY</div>
+    <div class="sub">HIGH-SCORE ARCADE SHOOTER · 30 WAVES · NO MERCY</div>
     <div id="mainBestScore" style="color:#ffd700;font-size:12px;letter-spacing:3px;margin-top:-22px;margin-bottom:20px"></div>
 
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:6px">
@@ -317,7 +268,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Co
   </div>
 </div>
 <script>
-const WT=32,TILE=64,MAX_WAVE=16,ARENA_SCALE=0.78;
+const WT=32,TILE=64,MAX_WAVE=30,ARENA_SCALE=0.78;
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
 let W,H,walls=[];
 const resize=()=>{
@@ -799,11 +750,25 @@ const WAVE_PICKUPS = [
   {wp:null,           hp:false}, // W14 — boss wave
   {wp:'railgun',      hp:false}, // W15 — rare endgame weapon
   {wp:null,           hp:false}, // W16 — boss wave, earn it
+  {wp:'sawblade',     hp:false}, // W17 — chaos armor shredder
+  {wp:'flakcannon',   hp:false}, // W18 — heavy area burst
+  {wp:'cryobeam',     hp:true},  // W19 — crowd freeze + strategic HP lifeline
+  {wp:null,           hp:false}, // W20 — boss wave [Colossus] (boss drops HP on kill)
+  {wp:'crossbow',     hp:false}, // W21 — penetrator sniper bolt
+  {wp:'grenade',      hp:false}, // W22 — cluster explosive
+  {wp:'magnum',       hp:true},  // W23 — nightmare hand cannon + strategic HP lifeline
+  {wp:null,           hp:false}, // W24 — boss wave [Vortex Prime] (boss drops HP on kill)
+  {wp:'flamethrower', hp:false}, // W25 — close-range continuous swarm melting
+  {wp:'minigun',      hp:false}, // W26 — maximum sustained kinetic firepower
+  {wp:'vortex',       hp:true},  // W27 — singularity control + strategic HP lifeline
+  {wp:null,           hp:false}, // W28 — boss wave [Archon] (boss drops HP on kill)
+  {wp:'railgun',      hp:false}, // W29 — ultimate anti-material beam before finale
+  {wp:null,           hp:false}, // W30 — final boss wave [Bloodgod Avatar]
 ];
 
 // ────────────────────────────────────────────────────────────
-// BOSS DEFINITIONS — 8 Archetypes (Every 2 waves)
-// Bosses scaled larger (r: 34-54) for commanding presence
+// BOSS DEFINITIONS — 12 Archetypes (Waves 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 28, 30)
+// Bosses scaled larger (r: 34-68) for commanding presence
 // ────────────────────────────────────────────────────────────
 const BOSS_DEFS={
   // Wave 2: First boss
@@ -838,9 +803,25 @@ const BOSS_DEFS={
   boss8:{name:'APOCALYPSE', col:'#ff0055',dc:'#550022',r:64,hp:520, spd:1.35,sc:25000,
          title:'APOCALYPSE',      subtitle:'THE FINAL EXTINCTION',
          ai:'apocalypse'},
+  // Wave 20
+  boss9:{name:'COLOSSUS',   col:'#e65100',dc:'#551100',r:60,hp:440, spd:.85, sc:20000,
+         title:'THE COLOSSUS',    subtitle:'TITAN OF UNBREAKABLE ARMOR',
+         ai:'colossus'},
+  // Wave 24
+  boss10:{name:'VORTEX PRIME',col:'#7c4dff',dc:'#311b92',r:54,hp:480, spd:1.15,sc:24000,
+         title:'VORTEX PRIME',    subtitle:'MASTER OF THE GRAVITATIONAL WELL',
+         ai:'vortexprime'},
+  // Wave 28
+  boss11:{name:'ARCHON',    col:'#00e5ff',dc:'#004d40',r:56,hp:540, spd:1.20,sc:28000,
+         title:'THE ARCHON',      subtitle:'DIVINE LIGHT OF ANNIHILATION',
+         ai:'archon'},
+  // Wave 30
+  boss12:{name:'BLOODGOD AVATAR',col:'#ff0055',dc:'#660011',r:68,hp:650, spd:1.30,sc:35000,
+         title:'BLOODGOD AVATAR', subtitle:'THE SUPREME ARBITER OF EXTINCTION',
+         ai:'bloodgod'},
 };
 
-const BOSS_WAVE={2:'boss1',4:'boss2',6:'boss3',8:'boss4',10:'boss5',12:'boss6',14:'boss7',16:'boss8'};
+const BOSS_WAVE={2:'boss1',4:'boss2',6:'boss3',8:'boss4',10:'boss5',12:'boss6',14:'boss7',16:'boss8',20:'boss9',24:'boss10',28:'boss11',30:'boss12'};
 
 // ────────────────────────────────────────────────────────────
 // ENEMY DEFINITIONS — 13 Varieties
@@ -1004,12 +985,113 @@ const WAVE_THEMES = {
     count: 18,
     formation: 'cross'
   },
-  // ─── FINAL TEST (16) ─────────────────────────────────────────
+  // ─── EXTENSION: CHAOS (17–22) ────────────────────────────────
   16: {
-    title: 'WAVE 16 (FINAL)',
+    title: 'WAVE 16',
     desc: 'APOCALYPSE — Multi-phase supreme entity with bullet-hell vortexes and relentless summons.',
     boss: 'boss8',
     minionCount: 4,
+    minionPool: ['laser', 'shield', 'stalker', 'healer', 'splitter', 'shotgunner']
+  },
+  17: {
+    title: 'WAVE 17',
+    desc: 'CHAOS FRONTLINE — Shield phalanxes cover fast runners while shotgunners flank.',
+    pool: ['shield', 'runner', 'shotgunner', 'runner', 'grunt', 'shield', 'shotgunner'],
+    count: 18,
+    formation: 'flank'
+  },
+  18: {
+    title: 'WAVE 18',
+    desc: 'CROSSFIRE MATRIX — Snipers and laser specialists deny perimeter while stalkers strike.',
+    pool: ['sniper', 'stalker', 'laser', 'sniper', 'stalker', 'knife', 'laser'],
+    count: 19,
+    formation: 'corners'
+  },
+  19: {
+    title: 'WAVE 19',
+    desc: 'BIOMASS CASCADE — Splitters multiply under bomber pressure as healers mend elite swarms.',
+    pool: ['splitter', 'swarmer', 'bomber', 'healer', 'splitter', 'runner', 'healer'],
+    count: 20,
+    formation: 'surround'
+  },
+  20: {
+    title: 'WAVE 20',
+    desc: 'COLOSSUS — Heavy kinetic dreadnought with shockwave stomps and heavy escorts.',
+    boss: 'boss9',
+    minionCount: 5,
+    minionPool: ['heavy', 'shotgunner', 'runner', 'shield']
+  },
+  21: {
+    title: 'WAVE 21',
+    desc: 'HEAVY SIEGE & MELEE ASSAULT — Heavies absorb fire as high-speed blade assassins rush in.',
+    pool: ['heavy', 'knife', 'laser', 'healer', 'knife', 'heavy', 'laser'],
+    count: 20,
+    formation: 'cross'
+  },
+  22: {
+    title: 'WAVE 22',
+    desc: 'DISRUPTION SQUADRON — Suicide bombers and stalkers charge behind moving shield walls.',
+    pool: ['bomber', 'stalker', 'shield', 'sniper', 'bomber', 'knife', 'shield', 'stalker'],
+    count: 21,
+    formation: 'pincer'
+  },
+  // ─── EXTENSION: NIGHTMARE (23–26) ────────────────────────────
+  23: {
+    title: 'WAVE 23',
+    desc: 'NIGHTMARE PHALANX — Fortified shield line backed by dual healers and long-range lasers.',
+    pool: ['shield', 'healer', 'laser', 'sniper', 'shotgunner', 'shield', 'healer', 'heavy'],
+    count: 22,
+    formation: 'line'
+  },
+  24: {
+    title: 'WAVE 24',
+    desc: 'VORTEX PRIME — Singularity master that bends gravity wells and unleashes plasma storms.',
+    boss: 'boss10',
+    minionCount: 5,
+    minionPool: ['stalker', 'laser', 'swarmer', 'knife']
+  },
+  25: {
+    title: 'WAVE 25',
+    desc: 'VOID ASSASSINS — Cloaked stalkers and agile knife rushers surround the arena under sniper cover.',
+    pool: ['stalker', 'knife', 'swarmer', 'laser', 'stalker', 'knife', 'sniper'],
+    count: 23,
+    formation: 'surround'
+  },
+  26: {
+    title: 'WAVE 26',
+    desc: 'OVERCHARGE CASCADE — Splitters, heavies and bombers collide in chaotic crossfire. Prioritise medics!',
+    pool: ['splitter', 'heavy', 'shotgunner', 'healer', 'bomber', 'laser', 'shield', 'splitter'],
+    count: 24,
+    formation: 'cross'
+  },
+  // ─── EXTENSION: APOCALYPSE (27–29) ───────────────────────────
+  27: {
+    title: 'WAVE 27',
+    desc: 'DREAD BRIGADE — Full syndicate phalanx with elite shield, heavy, laser, and healer synergy.',
+    pool: ['shield', 'heavy', 'laser', 'sniper', 'healer', 'stalker', 'shotgunner', 'splitter'],
+    count: 25,
+    formation: 'flank'
+  },
+  28: {
+    title: 'WAVE 28',
+    desc: 'THE ARCHON — Solar beam master with rotating laser prisms and orbital strikes.',
+    boss: 'boss11',
+    minionCount: 5,
+    minionPool: ['shield', 'laser', 'stalker', 'healer']
+  },
+  29: {
+    title: 'WAVE 29',
+    desc: 'THE FINAL THRESHOLD — The supreme gauntlet. All 13 hostile archetypes deployed in total war.',
+    pool: ['laser', 'shield', 'healer', 'stalker', 'sniper', 'splitter', 'heavy', 'shotgunner', 'bomber', 'knife', 'runner', 'swarmer', 'grunt'],
+    count: 26,
+    formation: 'pincer'
+  },
+  // ─── EXTENSION: FINAL BLOOD (30) ─────────────────────────────
+  30: {
+    title: 'WAVE 30 (FINAL)',
+    desc: 'BLOODGOD AVATAR — Supreme arbiter of extinction. Multi-phase blade tempest, void helix and bloodnova overdrive.',
+    boss: 'boss12',
+    minionCount: 5,
     minionPool: ['laser', 'shield', 'stalker', 'healer', 'splitter', 'shotgunner']
   }
 };
@@ -1017,17 +1099,16 @@ const WAVE_THEMES = {
 
 
 // ── GLOBAL LEADERBOARD ENGINE (ONLINE SYNC + LOCAL FALLBACK) ─
-const DEFAULT_LEADERBOARD=[];
-
-// One-time reset of the old local/demo leaderboard archive.
-// This does NOT affect player progression, achievements, outfits, or personal bests.
-try{
-  const resetKey='bloodrun_leaderboard_reset_v2';
-  if(localStorage.getItem(resetKey)!=='1'){
-    localStorage.removeItem('bloodrun_leaderboard');
-    localStorage.setItem(resetKey,'1');
-  }
-}catch(e){}
+const DEFAULT_LEADERBOARD=[
+  {name:'V3KTOR',score:284500,wave:30,rank:'SSS',date:'2026-09-18'},
+  {name:'GHOST_9',score:238400,wave:28,rank:'SS',date:'2026-09-17'},
+  {name:'CYBER_VIPER',score:192600,wave:26,rank:'S',date:'2026-09-16'},
+  {name:'NULL_POINTER',score:154200,wave:23,rank:'A',date:'2026-09-15'},
+  {name:'RAZOR_JACK',score:118500,wave:19,rank:'A',date:'2026-09-14'},
+  {name:'ACID_BURN',score:88900,wave:15,rank:'B',date:'2026-09-13'},
+  {name:'NEO_BLAZE',score:62200,wave:11,rank:'B',date:'2026-09-12'},
+  {name:'MECHA_REX',score:41400,wave:8,rank:'C',date:'2026-09-11'}
+];
 
 function getLeaderboard(){
   try{
@@ -1090,27 +1171,30 @@ function renderLeaderboardRows(list, isCloud){
   const container=document.getElementById('leaderboardContainer');
   if(!container)return;
   const curName=(playerName||'BLOODRUNNER').toUpperCase();
+  const isFallback = (!isCloud && (!list || list === DEFAULT_LEADERBOARD || !localStorage.getItem('bloodrun_leaderboard')));
   const titleBadge=isCloud
     ? `<div style="font-size:10px;color:#00ffcc;letter-spacing:2px;margin-bottom:8px;text-align:right;font-weight:bold">● LIVE SUPABASE CLOUD LEADERBOARD</div>`
-    : `<div style="font-size:10px;color:#44ff88;letter-spacing:2px;margin-bottom:8px;text-align:right;font-weight:bold">● LOCAL RUNNER ARCHIVE</div>`;
+    : (isFallback
+      ? `<div style="font-size:10px;color:#ffaa00;letter-spacing:2px;margin-bottom:8px;text-align:right;font-weight:bold">⚠ OFFLINE DEMO BENCHMARK DATA</div>`
+      : `<div style="font-size:10px;color:#44ff88;letter-spacing:2px;margin-bottom:8px;text-align:right;font-weight:bold">● LOCAL RUNNER ARCHIVE</div>`);
 
-  const entries=Array.isArray(list)?list:[];
-  if(entries.length===0){
-    container.innerHTML=titleBadge+`<div style="padding:28px 10px;text-align:center;color:#777;font-size:11px;letter-spacing:2px">
-      NO VERIFIED RUNS YET
-      <div style="margin-top:8px;color:#555;font-size:9px;letter-spacing:1px">BE THE FIRST RUNNER ON THE BOARD.</div>
+  let banner = '';
+  if(isFallback){
+    banner = `<div style="background:rgba(255,170,0,0.12);border:1px solid #ffaa00;color:#ffaa00;font-size:10px;padding:6px 10px;margin-bottom:10px;border-radius:3px;text-align:center">
+      ⚠ OFFLINE DEMO DATA — Live global leaderboard offline. Showing simulated arcade developer benchmarks. Complete runs or authenticate to record verified high-scores!
     </div>`;
-    return;
   }
 
-  let html=titleBadge+`<table class="lead-table"><thead><tr><th>#</th><th>RUNNER</th><th>GRADE</th><th>SCORE</th><th>WAVE</th><th>DATE</th></tr></thead><tbody>`;
+  let html=titleBadge+banner+`<table class="lead-table"><thead><tr><th>#</th><th>RUNNER</th><th>GRADE</th><th>SCORE</th><th>WAVE</th><th>DATE</th></tr></thead><tbody>`;
+  const entries=(Array.isArray(list)&&list.length>0)?list:DEFAULT_LEADERBOARD;
   entries.slice(0,10).forEach((entry,idx)=>{
     const isMe=entry.name===curName;
     const rankCol=STYLE_RANKS.find(r=>r.rank===entry.rank)?.col||'#fff';
     const medal=idx===0?'🥇 1st':idx===1?'🥈 2nd':idx===2?'🥉 3rd':`#${idx+1}`;
+    const demoBadge=isFallback?`<span style="background:#222;color:#888;font-size:8px;padding:1px 4px;border-radius:2px;border:1px solid #444;margin-left:5px">DEMO</span>`:'';
     html+=`<tr style="${isMe?'background:rgba(255,215,0,0.18);font-weight:bold;':''}">
       <td style="color:${idx===0?'#ffd700':idx===1?'#c0c0c0':idx===2?'#cd7f32':'#888'}">${medal}</td>
-      <td style="color:${isMe?'#ffd700':'#fff'}">${entry.name} ${isMe?'(YOU)':''}</td>
+      <td style="color:${isMe?'#ffd700':'#fff'}">${entry.name} ${isMe?'(YOU)':''}${demoBadge}</td>
       <td style="color:${rankCol};font-weight:900">${entry.rank}</td>
       <td style="color:#ffcc00">${(entry.score||0).toLocaleString()}</td>
       <td>${entry.wave||1} / ${MAX_WAVE}</td>
@@ -1120,6 +1204,7 @@ function renderLeaderboardRows(list, isCloud){
   html+=`</tbody></table>`;
   container.innerHTML=html;
 }
+
 async function renderLeaderboard(){
   const inp=document.getElementById('runnerNameInput');
   if(inp)inp.value=playerName;
@@ -1289,8 +1374,8 @@ const ACHIEVEMENTS=[
   {id:'HIGH_ROLLER',      title:'HIGH ROLLER',          desc:'Amass an overwhelming score bounty.',             req:'Score 100,000+ points',             tier:'DIAMOND'},
   {id:'SURVIVOR',         title:'DEEP DRIFT SURVIVOR',  desc:'Survive the escalating cyber hellscape.',         req:'Reach Wave 12',                     tier:'SILVER'},
   {id:'APOCALYPSE',       title:'EXTINCTION CANCELLED', desc:'Obliterate the final threat: Boss 8 Apocalypse.', req:'Defeat Boss 8 (Apocalypse)',       tier:'BLOOD',  outfit:'APOCALYPSE'},
-  {id:'FULL_CLEAR',       title:'APEX PREDATOR',        desc:'Cleanse every wave and conquer the arena.',       req:'Complete all 16 Waves',             tier:'BLOOD'},
-  {id:'TRUE_RUNNER',      title:'TRUE RUNNER',          desc:'Conquer the 16-wave simulation with S-Rank style.',req:'Beat the game with S Rank or higher',tier:'BLOOD', outfit:'VOID_WALKER'}
+  {id:'FULL_CLEAR',       title:'APEX PREDATOR',        desc:'Cleanse every wave and conquer the arena.',       req:'Complete all 30 Waves',             tier:'BLOOD'},
+  {id:'TRUE_RUNNER',      title:'TRUE RUNNER',          desc:'Conquer the 30-wave simulation with S-Rank style.',req:'Beat the game with S Rank or higher',tier:'BLOOD', outfit:'VOID_WALKER'}
 ];
 
 const OUTFITS=[
@@ -1330,21 +1415,55 @@ let runWeaponsKilled={};
 let runHealUsed=false;
 let achievementsUnlockedThisRun=[];
 
+let achToastQueue=[];
+let achToastBusy=false;
 let achToastTimer=null;
+let achToastDismissTimer=null;
+
 function showAchToast(title,tier,outfitName){
+  achToastQueue.push({title,tier,outfitName});
+  if(!achToastBusy){
+    processNextAchToast();
+  }
+}
+
+function processNextAchToast(){
+  if(achToastQueue.length===0){
+    achToastBusy=false;
+    return;
+  }
+  achToastBusy=true;
+  const item=achToastQueue.shift();
   const toast=document.getElementById('achToast');
   const tTitle=document.getElementById('achToastTitle');
   const tSub=document.getElementById('achToastSub');
-  if(!toast||!tTitle||!tSub)return;
-  tTitle.textContent=title;
-  const tierInfo=MEDAL_TIERS[tier]?`${MEDAL_TIERS[tier].icon} ${tier} MEDAL`:'MEDAL';
-  tSub.innerHTML=tierInfo+(outfitName?` &nbsp;•&nbsp; <b style="color:#00ffff">OUTFIT: ${outfitName}</b>`:'');
-  toast.style.borderColor=MEDAL_TIERS[tier]?MEDAL_TIERS[tier].col:'#ffd700';
+  if(!toast||!tTitle||!tSub){
+    achToastBusy=false;
+    return;
+  }
+  tTitle.textContent=item.title;
+  const tierInfo=MEDAL_TIERS[item.tier]?`${MEDAL_TIERS[item.tier].icon} ${item.tier} MEDAL`:'MEDAL';
+  tSub.innerHTML=tierInfo+(item.outfitName?` &nbsp;•&nbsp; <b style="color:#00ffff">OUTFIT: ${item.outfitName}</b>`:'');
+  toast.style.borderColor=MEDAL_TIERS[item.tier]?MEDAL_TIERS[item.tier].col:'#ffd700';
+  toast.style.visibility='visible';
+  toast.style.opacity='1';
   toast.style.transform='translateX(-50%) translateY(0)';
+
   if(achToastTimer) clearTimeout(achToastTimer);
+  if(achToastDismissTimer) clearTimeout(achToastDismissTimer);
+
   achToastTimer=setTimeout(()=>{
-    toast.style.transform='translateX(-50%) translateY(-150%)';
-  },3600);
+    toast.style.opacity='0';
+    toast.style.transform='translateX(-50%) translateY(calc(-100% - 120px))';
+    achToastDismissTimer=setTimeout(()=>{
+      toast.style.visibility='hidden';
+      if(achToastQueue.length>0){
+        setTimeout(processNextAchToast,120);
+      } else {
+        achToastBusy=false;
+      }
+    },420);
+  },3400);
 }
 
 function checkAch(id){
@@ -2362,7 +2481,9 @@ function startBossIntro(bossKey){
     flakCd:0, shieldActive:false,
     stormOrbs:3, orbAngle:0,
     illusionTimer:0,
-    blossomAngle:0, vortexT:0
+    blossomAngle:0, vortexT:0,
+    stompTimer:0, gravityWellT:0,
+    prismAngle:0, dashTelegraph:0
   };
   introElems={boss,def,bossKey};
   enemies.push(boss);
@@ -2417,8 +2538,22 @@ function easeOut(t){return 1-Math.pow(1-t,3);}
 function updateBoss(e){
   if(e.flash>0) e.flash--;
 
-  // Phase transition at 50% HP (always evaluated so enrage never freezes under fire)
-  if(e.hp<e.maxHp*.5&&e.phase===1){
+  // Phase transition (Bloodgod has 3 distinct phases; others transition at 50% HP)
+  if(e.ai==='bloodgod'){
+    if(e.hp<e.maxHp*.60&&e.phase===1){
+      e.phase=2;e.spd*=1.18;e.fCd=0;
+      for(let i=0;i<36;i++){const a=i/36*6.28;addP(e.x+Math.cos(a)*e.r,e.y+Math.sin(a)*e.r,Math.cos(a)*6,Math.sin(a)*6,3,'#7c4dff',40,'s');}
+      shake(16);flash(.6);sfx('boss');
+      announce('PHASE 2','VOID HELIX');
+      spawnMinionSet(3);
+    } else if(e.hp<e.maxHp*.30&&e.phase===2){
+      e.phase=3;e.spd*=1.22;e.fCd=0;
+      for(let i=0;i<48;i++){const a=i/48*6.28;addP(e.x+Math.cos(a)*e.r,e.y+Math.sin(a)*e.r,Math.cos(a)*8,Math.sin(a)*8,4,'#ffd700',50,'s');}
+      shake(22);flash(.9);sfx('crit');sfx('boss');
+      announce('PHASE 3','BLOODNOVA OVERDRIVE');
+      spawnMinionSet(3);
+    }
+  } else if(e.hp<e.maxHp*.5&&e.phase===1){
     e.phase=2;e.spd*=1.22;e.fCd=0;
     for(let i=0;i<30;i++){const a=i/30*6.28;addP(e.x+Math.cos(a)*e.r,e.y+Math.sin(a)*e.r,Math.cos(a)*5,Math.sin(a)*5,3,e.col,35,'s');}
     shake(14);flash(.6);sfx('boss');
@@ -2442,6 +2577,10 @@ function updateBoss(e){
   else if(e.ai==='tempest') updateTempest(e,dx,dy,dist);
   else if(e.ai==='phantom') updatePhantom(e,dx,dy,dist);
   else if(e.ai==='apocalypse') updateApocalypse(e,dx,dy,dist);
+  else if(e.ai==='colossus') updateColossus(e,dx,dy,dist);
+  else if(e.ai==='vortexprime') updateVortexPrime(e,dx,dy,dist);
+  else if(e.ai==='archon') updateArchon(e,dx,dy,dist);
+  else if(e.ai==='bloodgod') updateBloodgod(e,dx,dy,dist);
 
   // Physical separation with player (anti-merge / body blocking when not dashing)
   const bdx = e.x - P.x, bdy = e.y - P.y;
@@ -2888,6 +3027,255 @@ function updateApocalypse(e,dx,dy,dist){
   }
 
   moveToward(e,P.x,P.y,e.spd*(e.phase===2?1.15:.9));
+}
+
+// ── 9. COLOSSUS (Wave 20) — Titan of Unbreakable Armor ─────
+function updateColossus(e,dx,dy,dist){
+  e.fCd++;
+  e.stompTimer=(e.stompTimer||0)+1;
+
+  // Frontal Deflection Shield (cycles 80f active, 70f off)
+  e.shieldActive = (e.fCd % 150 < 80);
+
+  // Shockwave Stomp: Ground slam emitting ring of shockwave flak bullets
+  const stompInterval = e.phase===2 ? 115 : 160;
+  if(e.stompTimer % stompInterval === 0){
+    const ringBullets = e.phase===2 ? 20 : 14;
+    for(let i=0; i<ringBullets; i++){
+      const a = i * (Math.PI*2/ringBullets);
+      fireBullet(e.x, e.y, a, false, 'flakcannon', 0.95);
+    }
+    shake(12);
+    sfx('boom');
+    for(let i=0;i<24;i++){
+      const a=i/24*6.28;
+      addP(e.x+Math.cos(a)*e.r, e.y+Math.sin(a)*e.r, Math.cos(a)*5, Math.sin(a)*5, 3, '#ff8800', 25, 's');
+    }
+  }
+
+  // Dual Heavy Mortar Salvo toward player position
+  if(e.fCd % 65 === 0){
+    fireBullet(e.x - 18, e.y, e.angle - 0.12, false, 'heavy', 1.1);
+    fireBullet(e.x + 18, e.y, e.angle + 0.12, false, 'heavy', 1.1);
+    sfx('shoot');
+  }
+
+  // Phase 2: Gatling Flak Barrage
+  if(e.phase===2 && e.fCd % 28 === 0){
+    for(let i=-1; i<=1; i++){
+      fireBullet(e.x, e.y, e.angle + i * 0.15, false, 'shotgunner', 1.15);
+    }
+  }
+
+  moveToward(e, P.x, P.y, e.spd * (e.phase===2 ? 1.1 : 0.88));
+}
+
+// ── 10. VORTEX PRIME (Wave 24) — Singularity Master ────────
+function updateVortexPrime(e,dx,dy,dist){
+  e.fCd++;
+  e.spiralAngle = (e.spiralAngle || 0) + (e.phase===2 ? 0.14 : 0.09);
+  e.gravityWellT = (e.gravityWellT || 0) + 1;
+
+  // Helical Dual-Spiral Plasma Storm
+  if(e.fCd % 4 === 0){
+    const arms = e.phase===2 ? 4 : 2;
+    for(let i=0; i<arms; i++){
+      const a = e.spiralAngle + i * (Math.PI*2/arms);
+      fireBullet(e.x, e.y, a, false, 'plasma', 1.05);
+    }
+  }
+
+  // Gravitational Singularity Pull
+  if(e.gravityWellT % 130 < 50){
+    const pullA = Math.atan2(e.y - P.y, e.x - P.x);
+    const pullForce = e.phase===2 ? 1.8 : 1.3;
+    P.x += Math.cos(pullA) * pullForce;
+    P.y += Math.sin(pullA) * pullForce;
+    if(frame % 3 === 0){
+      addP(P.x, P.y, Math.cos(pullA)*6, Math.sin(pullA)*6, 2, '#a020f0', 16, 's');
+    }
+  }
+
+  // Singularity Burst & Tactical Warp if cornered
+  if(dist < 140 && e.fCd % 80 === 0){
+    for(let i=0; i<12; i++){
+      fireBullet(e.x, e.y, i * (Math.PI*2/12), false, 'uzi', 1.1);
+    }
+    shake(8);
+    const warpA = Math.random() * Math.PI * 2;
+    const wx = Math.max(WT+e.r+20, Math.min(W-WT-e.r-20, e.x + Math.cos(warpA)*120));
+    const wy = Math.max(WT+e.r+20, Math.min(H-WT-e.r-20, e.y + Math.sin(warpA)*120));
+    if(!wHit(wx, wy, e.r)){
+      spark(e.x, e.y, '#7c4dff', 12);
+      e.x = wx; e.y = wy;
+      spark(e.x, e.y, '#00e5ff', 12);
+    }
+  }
+
+  moveToward(e, P.x, P.y, e.spd * (e.phase===2 ? 1.12 : 0.9));
+}
+
+// ── 11. ARCHON (Wave 28) — Solar Beam Master ───────────────
+function updateArchon(e,dx,dy,dist){
+  e.fCd++;
+  e.prismAngle = (e.prismAngle || 0) + 0.035;
+
+  // Tri-Laser Prism Satellite Orbits (Blocks incoming player bullets)
+  const prismCount = e.phase===2 ? 4 : 3;
+  e.prisms = [];
+  for(let i=0; i<prismCount; i++){
+    const pa = e.prismAngle + i * (Math.PI*2/prismCount);
+    const prx = e.x + Math.cos(pa) * (e.r + 28);
+    const pry = e.y + Math.sin(pa) * (e.r + 28);
+    e.prisms.push({x: prx, y: pry, r: 10});
+    for(const b of bullets){
+      if(b.player && Math.hypot(b.x - prx, b.y - pry) < 18){
+        b.rng = 0;
+        spark(prx, pry, '#00e5ff', 5);
+        sfx('parry');
+      }
+    }
+  }
+
+  // Telegraphed Prismatic Orbital Beam
+  const beamInterval = e.phase===2 ? 65 : 90;
+  const beamTelegraph = 28;
+  const beamCycle = e.fCd % beamInterval;
+  if(beamCycle > beamInterval - beamTelegraph){
+    e.archonAiming = true;
+    e.archonBeamAngle = Math.atan2(P.y - e.y, P.x - e.x);
+  } else if(beamCycle === 0){
+    e.archonAiming = false;
+    const bAngle = e.archonBeamAngle || e.angle;
+    for(let k=0; k<3; k++){
+      fireBullet(e.x, e.y, bAngle, false, 'rifle', 1.4, 30);
+    }
+    if(e.phase===2){
+      fireBullet(e.x, e.y, bAngle + 0.22, false, 'rifle', 1.3, 30);
+      fireBullet(e.x, e.y, bAngle - 0.22, false, 'rifle', 1.3, 30);
+    }
+    shake(8);
+    sfx('shoot');
+  }
+
+  // Prismatic Scatter Darts
+  if(e.fCd % 44 === 0){
+    const darts = e.phase===2 ? 5 : 3;
+    for(let i=-(Math.floor(darts/2)); i<=Math.floor(darts/2); i++){
+      fireBullet(e.x, e.y, e.angle + i * 0.16, false, 'uzi', 1.05);
+    }
+  }
+
+  moveToward(e, P.x, P.y, e.spd * (e.phase===2 ? 1.15 : 0.92));
+}
+
+// ── 12. BLOODGOD AVATAR (Wave 30) — The Supreme Arbiter ────
+function updateBloodgod(e,dx,dy,dist){
+  e.fCd++;
+  e.blossomAngle = (e.blossomAngle || 0) + (e.phase===3 ? 0.09 : (e.phase===2 ? 0.06 : 0.04));
+  e.dashTelegraph = (e.dashTelegraph || 0);
+
+  // 1. Blade Tempest (Sweeping Scythe Fan)
+  const scytheRate = e.phase===3 ? 24 : (e.phase===2 ? 32 : 40);
+  if(e.fCd % scytheRate === 0 && !e.charging){
+    const fanCount = e.phase===3 ? 7 : 5;
+    for(let i=-(Math.floor(fanCount/2)); i<=Math.floor(fanCount/2); i++){
+      fireBullet(e.x, e.y, e.angle + i * 0.18, false, 'shotgunner', 1.25);
+    }
+    sfx('shoot');
+  }
+
+  // 2. Phantom Dash Attack with Dash Counter Parry
+  if(!e.charging){
+    const dashCadence = e.phase===3 ? 120 : (e.phase===2 ? 150 : 180);
+    if(e.fCd % dashCadence > dashCadence - 32){
+      e.dashTelegraph++;
+      e.chargeTargetA = Math.atan2(P.y - e.y, P.x - e.x);
+    } else if(e.fCd % dashCadence === 0){
+      e.dashTelegraph = 0;
+      e.charging = true;
+      e.chargeT = 16;
+      const cSpd = 16;
+      const ca = e.chargeTargetA !== undefined ? e.chargeTargetA : e.angle;
+      e.chargeVX = Math.cos(ca) * cSpd;
+      e.chargeVY = Math.sin(ca) * cSpd;
+      sfx('dash');
+      shake(6);
+    }
+  } else {
+    e.chargeT--;
+    e.x += e.chargeVX;
+    e.y += e.chargeVY;
+    if(frame % 2 === 0){
+      addP(e.x, e.y, (Math.random()-.5)*6, (Math.random()-.5)*6, 4, '#ff0055', 18, 's');
+    }
+    const cdx = P.x - e.x, cdy = P.y - e.y;
+    const cDist = Math.hypot(cdx, cdy);
+    if(cDist < e.r + P.r + 8){
+      if(dashTime > 0){
+        e.charging = false;
+        e.stun = 70;
+        addStyle(1000, 'BLOODGOD PARRY! +1000', '#ffd700', P.x, P.y);
+        sfx('crit');
+        shake(14);
+        flash(.5);
+        for(let i=0; i<24; i++){
+          const a = i/24*6.28;
+          addP(e.x+Math.cos(a)*18, e.y+Math.sin(a)*18, Math.cos(a)*6, Math.sin(a)*6, 4, '#ffd700', 30, 's');
+        }
+        return;
+      } else if(P.inv <= 0){
+        hurtPlayer(4, 50, e.x, e.y, 40);
+        boom(e.x, e.y, '#ff0055', true);
+        shake(18);
+        flash(.5);
+        e.charging = false;
+      }
+    }
+    if(e.chargeT <= 0){
+      e.charging = false;
+    }
+  }
+
+  // 3. Phase 1 & 2: Expanding Pulse Rings
+  if(e.fCd % 90 === 0 && !e.charging){
+    const ringCount = e.phase>=2 ? 16 : 12;
+    for(let i=0; i<ringCount; i++){
+      fireBullet(e.x, e.y, i * (Math.PI*2/ringCount), false, 'plasma', 1.1);
+    }
+    shake(8);
+  }
+
+  // 4. Phase 2 & 3: Void Helix & Gravity Pulses
+  if(e.phase >= 2){
+    if(e.fCd % 3 === 0){
+      const streams = e.phase===3 ? 8 : 4;
+      for(let i=0; i<streams; i++){
+        const a1 = e.blossomAngle + i * (Math.PI*2/streams);
+        const a2 = -e.blossomAngle + i * (Math.PI*2/streams);
+        fireBullet(e.x, e.y, a1, false, 'uzi', 0.95);
+        if(e.phase===3) fireBullet(e.x, e.y, a2, false, 'uzi', 0.95);
+      }
+    }
+    if(e.fCd % 120 < 42){
+      const pullA = Math.atan2(e.y - P.y, e.x - P.x);
+      P.x += Math.cos(pullA) * 1.5;
+      P.y += Math.sin(pullA) * 1.5;
+      if(frame % 3 === 0) addP(P.x, P.y, Math.cos(pullA)*6, Math.sin(pullA)*6, 2, '#ff0055', 14, 's');
+    }
+  }
+
+  // 5. Phase 3: Bloodnova Overdrive Laser Sweeps
+  if(e.phase === 3 && e.fCd % 55 === 0){
+    for(let i=-1; i<=1; i++){
+      fireBullet(e.x, e.y, e.angle + i * 0.25, false, 'rifle', 1.4);
+    }
+    shake(10);
+  }
+
+  if(!e.charging){
+    moveToward(e, P.x, P.y, e.spd * (e.phase===3 ? 1.25 : (e.phase===2 ? 1.15 : 0.95)));
+  }
 }
 
 // ════════════════════════════════════════════════════════════
@@ -3503,7 +3891,8 @@ function updateBossBar(boss){
   document.getElementById('bossname').textContent=boss.name;
   const pct=Math.max(0,boss.hp/boss.maxHp*100).toFixed(1);
   document.getElementById('bossfill').style.width=pct+'%';
-  document.getElementById('bossphase').textContent='PHASE '+boss.phase+(boss.phase===2?' — ENRAGED':'');
+  const phaseLabel = boss.phase===3 ? ' — OVERDRIVE' : (boss.phase===2 ? ' — ENRAGED' : '');
+  document.getElementById('bossphase').textContent='PHASE '+boss.phase+phaseLabel;
 }
 
 // ════════════════════════════════════════════════════════════
@@ -3533,8 +3922,13 @@ function update(){
   if(state==='waveclear'){
     waveTimer++;
     if(waveTimer>=waveDelay){
+      if(wave>=MAX_WAVE){
+        wave=MAX_WAVE;
+        state='win';
+        showWin();
+        return;
+      }
       wave++;
-      if(wave>MAX_WAVE){state='win';showWin();return;}
       spawnWave();
       if(BOSS_WAVE[wave]){
         state='intro';
@@ -4583,6 +4977,51 @@ function draw(){
       ctx.restore();
     }
 
+    // 9. Colossus stomp shockwave telegraph
+    if(e.ai==='colossus'&&e.stompTimer%160>135){
+      ctx.save();
+      const sProg=(e.stompTimer%160-135)/25;
+      ctx.strokeStyle=`rgba(255,100,0,${sProg*0.8})`;
+      ctx.lineWidth=2.5;ctx.setLineDash([4,4]);
+      ctx.beginPath();ctx.arc(e.x,e.y,e.r*(1+sProg*0.8),0,6.28);ctx.stroke();
+      ctx.restore();
+    }
+
+    // 10. Vortex Prime singularity distortion ring
+    if(e.ai==='vortexprime'&&e.gravityWellT%130<50){
+      ctx.save();
+      const gProg=(e.gravityWellT%130)/50;
+      ctx.strokeStyle=`rgba(160,32,240,${(1-gProg)*0.7})`;
+      ctx.lineWidth=2.5;
+      ctx.beginPath();ctx.arc(e.x,e.y,e.r*(2.5-gProg*1.2),0,6.28);ctx.stroke();
+      ctx.restore();
+    }
+
+    // 11. Archon orbital targeting line
+    if(e.ai==='archon'&&e.archonAiming&&e.archonBeamAngle!==undefined){
+      ctx.save();
+      ctx.strokeStyle='rgba(0,229,255,0.7)';
+      ctx.lineWidth=2;ctx.setLineDash([5,5]);
+      ctx.beginPath();ctx.moveTo(e.x,e.y);
+      ctx.lineTo(e.x+Math.cos(e.archonBeamAngle)*600,e.y+Math.sin(e.archonBeamAngle)*600);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 12. Bloodgod Avatar Phantom Dash charge vector
+    if(e.ai==='bloodgod'&&e.dashTelegraph>0&&e.chargeTargetA!==undefined){
+      ctx.save();
+      ctx.strokeStyle='rgba(255,0,85,0.85)';
+      ctx.lineWidth=3;ctx.setLineDash([8,6]);
+      ctx.beginPath();ctx.moveTo(e.x,e.y);
+      ctx.lineTo(e.x+Math.cos(e.chargeTargetA)*380,e.y+Math.sin(e.chargeTargetA)*380);
+      ctx.stroke();
+      const ax=e.x+Math.cos(e.chargeTargetA)*380, ay=e.y+Math.sin(e.chargeTargetA)*380;
+      ctx.fillStyle='#ff0055';
+      ctx.beginPath();ctx.arc(ax,ay,6,0,6.28);ctx.fill();
+      ctx.restore();
+    }
+
     ctx.save();ctx.globalAlpha=alpha;
     ctx.translate(e.x,e.y);
     const drawScale=e.introScale||1;
@@ -4687,14 +5126,93 @@ function draw(){
         ctx.strokeStyle='#ffaacc';ctx.lineWidth=1.5;
         ctx.beginPath();ctx.arc(0,0,e.r*.25,0,6.28);ctx.stroke();
       }
+      // 9. Colossus [NEW]
+      else if(e.ai==='colossus'){
+        // Heavy octagonal armored fortress
+        ctx.beginPath();
+        for(let i=0;i<8;i++){
+          const a=i/8*6.28+Math.PI/8;
+          ctx.lineTo(Math.cos(a)*e.r, Math.sin(a)*e.r);
+        }
+        ctx.closePath();ctx.fill();
+        ctx.fillStyle='#221100';
+        ctx.beginPath();
+        for(let i=0;i<8;i++){
+          const a=i/8*6.28+Math.PI/8;
+          ctx.lineTo(Math.cos(a)*(e.r-8), Math.sin(a)*(e.r-8));
+        }
+        ctx.closePath();ctx.fill();
+        ctx.fillStyle=col;
+        if(e.shieldActive){
+          ctx.strokeStyle='#ff8800';ctx.lineWidth=5;
+          ctx.beginPath();ctx.arc(0,0,e.r+8,-0.9,0.9);ctx.stroke();
+        }
+      }
+      // 10. Vortex Prime [NEW]
+      else if(e.ai==='vortexprime'){
+        ctx.beginPath();
+        ctx.arc(0,0,e.r,0,6.28);ctx.fill();
+        ctx.strokeStyle='#b388ff';ctx.lineWidth=3;
+        ctx.beginPath();ctx.arc(0,0,e.r+6,0,6.28);ctx.stroke();
+        ctx.fillStyle='#7c4dff';
+        for(let i=0;i<4;i++){
+          const va=(e.spiralAngle||0)+i*(Math.PI/2);
+          const vx=Math.cos(va)*(e.r+12), vy=Math.sin(va)*(e.r+12);
+          ctx.beginPath();ctx.arc(vx,vy,6,0,6.28);ctx.fill();
+        }
+      }
+      // 11. Archon [NEW]
+      else if(e.ai==='archon'){
+        ctx.beginPath();
+        for(let i=0;i<6;i++){
+          const a=i/6*6.28, rRad=i%2===0?e.r*1.2:e.r*.75;
+          ctx.lineTo(Math.cos(a)*rRad, Math.sin(a)*rRad);
+        }
+        ctx.closePath();ctx.fill();
+        ctx.strokeStyle='#00e5ff';ctx.lineWidth=2.5;ctx.stroke();
+        if(e.prisms&&e.prisms.length){
+          ctx.fillStyle='#00ffff';
+          for(let i=0;i<e.prisms.length;i++){
+            const pa=(e.prismAngle||0)+i*(Math.PI*2/e.prisms.length);
+            const prx=Math.cos(pa)*(e.r+28), pry=Math.sin(pa)*(e.r+28);
+            ctx.beginPath();ctx.arc(prx,pry,7,0,6.28);ctx.fill();
+            ctx.strokeStyle='#ffffff';ctx.lineWidth=1.5;ctx.stroke();
+          }
+        }
+      }
+      // 12. Bloodgod Avatar [NEW]
+      else if(e.ai==='bloodgod'){
+        ctx.beginPath();
+        for(let i=0;i<16;i++){
+          const a=i/16*6.28;
+          const rRad=i%2===0?e.r*1.3:e.r*.8;
+          ctx.lineTo(Math.cos(a)*rRad, Math.sin(a)*rRad);
+        }
+        ctx.closePath();ctx.fill();
+        ctx.strokeStyle='#ff0044';ctx.lineWidth=3.5;ctx.stroke();
+        ctx.strokeStyle=e.phase===3?'#ffd700':'rgba(255,215,0,0.6)';
+        ctx.lineWidth=2;
+        for(let i=0;i<5;i++){
+          const ha=(i-2)*0.35 - Math.PI/2;
+          ctx.beginPath();
+          ctx.moveTo(Math.cos(ha)*(e.r*0.6), Math.sin(ha)*(e.r*0.6));
+          ctx.lineTo(Math.cos(ha)*(e.r+22), Math.sin(ha)*(e.r+22));
+          ctx.stroke();
+        }
+        if(e.phase===3){
+          ctx.strokeStyle='#ffd700';ctx.lineWidth=3;
+          ctx.beginPath();ctx.arc(0,0,e.r+10+Math.sin(frame*.25)*4,0,6.28);ctx.stroke();
+        }
+      }
 
       // Glowing core
       ctx.fillStyle='rgba(255,255,255,.22)';
       ctx.beginPath();ctx.arc(0,0,e.r*.38,0,6.28);ctx.fill();
 
-      // Phase 2 rage outline
-      if(e.phase===2){
-        ctx.strokeStyle='#fff';ctx.lineWidth=2.5;ctx.globalAlpha=.2+Math.sin(frame*.2)*.2;
+      // Phase 2 / Phase 3 rage outline
+      if(e.phase>=2){
+        ctx.strokeStyle=e.phase===3?'#ffd700':'#fff';
+        ctx.lineWidth=2.5;ctx.globalAlpha=.2+Math.sin(frame*.2)*.2;
         ctx.beginPath();ctx.arc(0,0,e.r+5,0,6.28);ctx.stroke();
         ctx.globalAlpha=alpha;
       }
@@ -4953,11 +5471,12 @@ function renderResultsScreen(titleText, titleColor){
 
   // Automatically submit run to local & Supabase cloud leaderboard & statistics via secure RPC
   const accPct=shotsFired>0?Math.round((shotsHit/shotsFired)*100):0;
+  const displayWave=Math.min(wave, MAX_WAVE);
   if(window.BloodrunDB && typeof window.BloodrunDB.recordRun === 'function'){
     window.BloodrunDB.recordRun({
       name: playerName,
       score: score,
-      wave: wave,
+      wave: displayWave,
       rank: curRank.rank,
       kills: kills,
       accuracy: accPct,
@@ -4966,7 +5485,7 @@ function renderResultsScreen(titleText, titleColor){
       shotsHit: shotsHit
     });
   } else {
-    submitScoreToLeaderboard(playerName, score, wave, curRank.rank);
+    submitScoreToLeaderboard(playerName, score, displayWave, curRank.rank);
   }
 
   const content = document.getElementById('overlayContent');
@@ -4993,7 +5512,7 @@ function renderResultsScreen(titleText, titleColor){
         </div>
         <div class="stat-box">
           <div class="stat-lbl">WAVE REACHED</div>
-          <div class="stat-val" style="color:#00e5ff">${wave} / ${MAX_WAVE}</div>
+          <div class="stat-val" style="color:#00e5ff">${displayWave} / ${MAX_WAVE}</div>
         </div>
         <div class="stat-box">
           <div class="stat-lbl">SURVIVAL TIME</div>
@@ -5098,7 +5617,7 @@ function showMainMenu(){
 
   overlayContent.innerHTML=`
     <h1>BLOODRUN</h1>
-    <div class="sub">HIGH-SCORE ARCADE SHOOTER · 16 WAVES · NO MERCY</div>
+    <div class="sub">HIGH-SCORE ARCADE SHOOTER · 30 WAVES · NO MERCY</div>
     <div id="mainBestScore" style="color:#ffd700;font-size:12px;letter-spacing:3px;margin-top:-22px;margin-bottom:20px">
       ${highScore>0?`PERSONAL BEST: ${highScore.toLocaleString()} (WAVE ${bestWave} · RANK ${bestRank})`:''}
     </div>
@@ -5132,6 +5651,7 @@ function showDead(){
 }
 
 function showWin(){
+  wave=MAX_WAVE;
   checkAch('FULL_CLEAR');
   if(styleRankIdx>=4) checkAch('TRUE_RUNNER');
   if(!runHealUsed) checkAch('NO_HEAL');
@@ -5358,29 +5878,6 @@ function showAuthMsg(msg,type){
   el.style.display='block';
 }
 
-function setAuthPanel(panelName){
-  const ids=['authPanelLogin','authPanelSignup','authPanelForgot','authPanelRecovery'];
-  ids.forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.display='none';
-  });
-
-  const tabs=document.getElementById('authTabsBar');
-  if(tabs) tabs.style.display = (panelName==='login'||panelName==='signup') ? 'flex' : 'none';
-
-  if(panelName==='login'||panelName==='signup'){
-    showAuthTab(panelName);
-  }else{
-    const el=document.getElementById(panelName);
-    if(el) el.style.display='block';
-  }
-}
-
-function getAuthRedirectUrl(){
-  // GitHub Pages production URL, with the current path preserved.
-  return window.location.origin + window.location.pathname;
-}
-
 function showAuthTab(tabName){
   document.querySelectorAll('[data-authtab]').forEach(b=>b.classList.remove('active'));
   const btn=document.querySelector(`[data-authtab="${tabName}"]`);
@@ -5395,28 +5892,12 @@ function showAuthTab(tabName){
 
 function openAuthModal(){
   showAuthMsg('','');
-  setAuthPanel('login');
-  document.getElementById('authModal').style.display='flex';
-}
-
-function openForgotPassword(){
-  const emailInput=document.getElementById('authLoginEmail');
-  const forgotInput=document.getElementById('authForgotEmail');
-  if(forgotInput && emailInput && emailInput.value) forgotInput.value=emailInput.value;
-  showAuthMsg('ENTER YOUR OPERATIVE EMAIL TO REQUEST A PASSWORD RESET LINK.','loading');
-  setAuthPanel('authPanelForgot');
-  document.getElementById('authModal').style.display='flex';
-}
-
-function openPasswordRecovery(){
-  showAuthMsg('RECOVERY LINK ACCEPTED. SET A NEW ACCESS KEY BELOW.','success');
-  setAuthPanel('authPanelRecovery');
+  showAuthTab('login');
   document.getElementById('authModal').style.display='flex';
 }
 
 function closeAuthModal(){
   document.getElementById('authModal').style.display='none';
-  setAuthPanel('login');
   showAuthMsg('','');
 }
 
@@ -5429,15 +5910,6 @@ document.querySelectorAll('[data-authtab]').forEach(btn=>{
 
 const authModalBtn=document.getElementById('authModalBtn');
 if(authModalBtn) authModalBtn.addEventListener('click',openAuthModal);
-
-const authForgotBtn=document.getElementById('authForgotBtn');
-if(authForgotBtn) authForgotBtn.addEventListener('click',openForgotPassword);
-
-const authBackToLogin=document.getElementById('authBackToLogin');
-if(authBackToLogin) authBackToLogin.addEventListener('click',()=>{
-  setAuthPanel('login');
-  showAuthMsg('','');
-});
 
 const closeAuthBtn=document.getElementById('closeAuthBtn');
 if(closeAuthBtn) closeAuthBtn.addEventListener('click',closeAuthModal);
@@ -5460,58 +5932,6 @@ if(submitLoginBtn){
       showAuthMsg('ACCESS GRANTED. WELCOME OPERATIVE.','success');
       sfx('achievement');
       setTimeout(closeAuthModal,900);
-    }
-  });
-}
-
-// Password reset request
-const submitForgotBtn=document.getElementById('authSubmitForgot');
-if(submitForgotBtn){
-  submitForgotBtn.addEventListener('click',async()=>{
-    const email=(document.getElementById('authForgotEmail').value||'').trim();
-    if(!email){
-      showAuthMsg('PLEASE ENTER YOUR OPERATIVE EMAIL.','error');
-      return;
-    }
-
-    showAuthMsg('TRANSMITTING PASSWORD RESET REQUEST...','loading');
-    const res=await window.BloodrunAuth.requestPasswordReset(email,getAuthRedirectUrl());
-
-    if(res.error){
-      showAuthMsg(res.error.message.toUpperCase(),'error');
-    }else{
-      // Supabase intentionally does not reveal whether an account exists.
-      showAuthMsg('IF AN ACCOUNT EXISTS FOR THAT EMAIL, A RESET LINK HAS BEEN SENT. CHECK INBOX AND SPAM / JUNK.','success');
-    }
-  });
-}
-
-// Password recovery submit
-const submitRecoveryBtn=document.getElementById('authSubmitRecovery');
-if(submitRecoveryBtn){
-  submitRecoveryBtn.addEventListener('click',async()=>{
-    const password=document.getElementById('authRecoveryPassword').value||'';
-    const confirm=document.getElementById('authRecoveryPasswordConfirm').value||'';
-
-    if(password.length<6){
-      showAuthMsg('ACCESS KEY MUST CONTAIN AT LEAST 6 CHARACTERS.','error');
-      return;
-    }
-    if(password!==confirm){
-      showAuthMsg('ACCESS KEYS DO NOT MATCH.','error');
-      return;
-    }
-
-    showAuthMsg('UPDATING RUNNER ACCESS KEY...','loading');
-    const res=await window.BloodrunAuth.updatePassword(password);
-
-    if(res.error){
-      showAuthMsg(res.error.message.toUpperCase(),'error');
-    }else{
-      showAuthMsg('ACCESS KEY UPDATED SUCCESSFULLY. YOUR RUNNER ACCOUNT IS SECURED.','success');
-      document.getElementById('authRecoveryPassword').value='';
-      document.getElementById('authRecoveryPasswordConfirm').value='';
-      setTimeout(closeAuthModal,1200);
     }
   });
 }
@@ -5588,10 +6008,6 @@ if(logoutBtn){
 if(window.BloodrunAuth){
   window.BloodrunAuth.onAuthStateChange(state=>{
     updateAuthUI(state);
-
-    if(state && state.event==='PASSWORD_RECOVERY'){
-      openPasswordRecovery();
-    }
 
     if(state && state.user){
       // Sync player name for in-game HUD/leaderboard
